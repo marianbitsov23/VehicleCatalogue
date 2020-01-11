@@ -21,13 +21,13 @@ def register():
         values = (
             None,
             request.form['username'],
-            request.form['password']
+            User.hash_password(request.form['password'])
         )
         User(*values).create()
 
         return redirect('/')
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def home():
     return render_template('home.html')
 
@@ -42,9 +42,6 @@ def login():
         password = data['password']
         user = User.find_by_username(username)
         if not user or not user.verify_password(password):
-            print('idvam')
-            return redirect('/home')
-        return redirect('/login')
-
+            return redirect('login')
 if __name__ == '__main__':
     app.run()
