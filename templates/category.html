@@ -1,10 +1,12 @@
 <title>Categories - {{ category.name }}</title>
 
 <a href="/categories/{{ category.id }}/delete">Delete</a>
-
+<br/>
+<a href="/categories">Back</a>
+<br/>
 <h1>{{ category.name }}</h1>
 {% for sale in category.sales() %}
-<a href="/sales/{{ sale.id }}"><b>Name:</b> {{ post.name }} | Author: {{ post.author }}</a>
+<a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Author: {{ sale.model }}</a>
 <br/>
 {% endfor %}
 

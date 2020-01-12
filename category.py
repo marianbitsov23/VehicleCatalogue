@@ -16,6 +16,8 @@ class Category:
     def find(id):
         with DB() as db:
             row = db.execute('SELECT * FROM categories WHERE id = ?', (id,)).fetchone()
+            if not row:
+                return Category(0, "No category")
             return Category(*row)
 
     def create(self):

@@ -28,8 +28,10 @@ class Sale:
     @staticmethod
     def find_by_category(category):
         with DB() as db:
-            rows = db.execute('SELECT * FROM sales WHERE category_id = ?'
-            (category.id,)).fetchall()
+            rows = db.execute(
+                'SELECT * FROM sales WHERE category_id = ?',
+                (category.id,)
+            ).fetchall()
             return [Sale(*row) for row in rows]
 
     def create(self):
