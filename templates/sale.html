@@ -1,0 +1,33 @@
+<title>Sale</title>
+<a href="/">Home</a>
+
+<h1>{{ sale.name }}</h1>
+<h2>{{ sale. model }}</h2>
+
+<hr>
+<p>
+{{ sale.price }}
+{{ sale.mileage }}
+{{ sale.horsepower }}
+{{ sale.year }}
+{{ sale.condition }}
+</p>
+
+<a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
+<form action="/sales/{{ sale.id }}/delte" method="post">
+    <button type="submit">Delete sale</button>
+</form>
+<br/>
+
+<form action="/comments/new" method="post">
+    <input type="text" name="message">
+    <input type="hidden" name="post_id" value="{{ post.id }}">
+    <button type="submit">Create comment</button>
+</form>
+<div id="comments">
+{% for comment in post.comments() %}
+    {{ comment.message }}
+    <br/>
+    <br/>
+{% endfor %}
+</div>

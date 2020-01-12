@@ -8,14 +8,14 @@ conn.cursor().execute('''
 CREATE TABLE IF NOT EXISTS sales
     (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        category_id INTEGER,
         name TEXT,
         model TEXT,
         horsepower INTEGER,
         price DOUBLE,
-        year TEXT as ISO8601,
+        year TEXT,
         condition TEXT,
         mileage DOUBLE,
+        category_id INTEGER,
         FOREIGN KEY(category_id) REFERENCES categories(id)
     )
 ''')

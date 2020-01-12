@@ -5,13 +5,80 @@ from flask import render_template, request, redirect, url_for, jsonify
 import json
 
 from user import User
+from comment import Comment
+from sale import Sale
+from category import Category
 
 app = Flask(__name__)
 
 @app.route('/')
 def main_page():
-    print('idvam')
     return render_template('main_page.html')
+
+@app.route('/sales')
+def list_sales():
+    return render_template('sales.html', sales = Sale.all())
+
+@app.route('/sales/<int:id>')
+def show_sale(id):
+    sale = Sale.find(id)
+
+    return render_template('sale.html', sale = sale)
+
+@app.route('/sales/new', methods=['GET', 'POST'])
+def new_sale():
+    if request.method == 'GET':
+        return render_template('new_sale.html', categories = Category.all())
+    elif request.method == 'POST':
+        print("Getting in post")
+        category = Category.find(request.form['category_id'])
+        print("2")
+        values = (
+            None,
+            request.form['name'],
+            request.form['model'],
+            request.form['horsepower'],
+            request.form['price'],
+            request.form['year'],
+            request.form['condition'],
+            request.form['mileage'],
+            category
+        )
+        Sale(*values).create()
+
+        return redirect('/sales')
+
+@app.route('/sales/<int:id>/delete', methods=['POST'])
+def delete_sale(id):
+    sale = Sale.find(id)
+    sale.delete()
+
+    return redirect('/sales')
+
+@app.route('/categories')
+def get_categories():
+    return render_template("categories.html", categories=Category.all())
+
+
+@app.route('/categories/new', methods=["GET", "POST"])
+def new_category():
+    if request.method == "GET":
+        return render_template("new_category.html")
+    elif request.method == "POST":
+        category = Category(None, request.form["name"])
+        category.create()
+        return redirect("/categories")
+
+
+@app.route('/categories/<int:id>')
+def get_category(id):
+    return render_template("category.html", category=Category.find(id))
+
+
+@app.route('/categories/<int:id>/delete')
+def delete_category(id):
+    Category.find(id).delete()
+    return redirect("/categories")
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -27,21 +94,18 @@ def register():
 
         return redirect('/')
 
-@app.route('/home', methods=['GET', 'POST'])
-def home():
-    return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
-        print('nachaloto na elifa')
         data = json.loads(request.data.decode('ascii'))
         username = data['username']
         password = data['password']
         user = User.find_by_username(username)
         if not user or not user.verify_password(password):
             return redirect('login')
+
 if __name__ == '__main__':
     app.run()

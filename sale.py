@@ -2,9 +2,8 @@ from database import DB
 from comment import Comment
 
 class Sale:
-    def __init__(self, id, category, name, model, horsepower, price, year, condition, mileage):
+    def __init__(self, id, name, model, horsepower, price, year, condition, mileage, category):
         self.id = id
-        self.category = category
         self.name = name
         self.model = model
         self.horsepower = horsepower
@@ -12,6 +11,7 @@ class Sale:
         self.year = year
         self.condition = condition
         self.mileage = mileage
+        self.category = category
 
     @staticmethod
     def all():
@@ -28,35 +28,36 @@ class Sale:
     @staticmethod
     def find_by_category(category):
         with DB() as db:
-            rows = db.execute('SELECT * FROM sales WHERE category = ?'
+            rows = db.execute('SELECT * FROM sales WHERE category_id = ?'
             (category.id,)).fetchall()
             return [Sale(*row) for row in rows]
 
     def create(self):
         with DB() as db:
-            values = (self.category, self.name, self.model, self.horsepower,
-            self.price, self.year, self.condition, self.mileage)
+            values = (self.name, self.model, self.horsepower,
+            self.price, self.year, self.condition, self.mileage, self.category.id)
             db.execute('''INSERT INTO
-                sales(category, name, model, horsepower)
+                sales (name, model, horsepower,
+                price, year, condition, mileage, category_id)
                 VALUES (?, ?, ?, ?, ?, ?, ? ,?)''', values)
             return self
 
     def save(self):
         with DB() as db:
             values = (
-                self.category.id
                 self.name,
                 self.model,
                 self.horsepower,
                 self.price,
                 self.year,
                 self.condition,
-                self.mileage
+                self.mileage,
+                self.category.id,
                 self.id
             )
-            db.execute('''UPDATE sales SET category_id = ?,
+            db.execute('''UPDATE sales SET 
             name = ?, model = ?, horsepower = ?, price = ?, year = ?,
-            condition = ?, mileage = ? WHERE id = ?''', values)
+            condition = ?, mileage = ?, category_id WHERE id = ?''', values)
             return self
 
     def delete(self):
