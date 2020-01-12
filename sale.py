@@ -20,7 +20,7 @@ class Sale:
             return [Sale(*row) for row in rows]
 
     @staticmethod
-    def find():
+    def find(id):
         with DB() as db:
             row = db.execute('SELECT * FROM sales WHERE id = ?', (id,)).fetchone()
             return Sale(*row)
@@ -61,7 +61,7 @@ class Sale:
             return self
 
     def delete(self):
-        with DB as db:
+        with DB() as db:
             db.execute('DELETE FROM sales WHERE id = ?', (self.id,))
 
     def comments(self):

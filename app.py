@@ -30,9 +30,7 @@ def new_sale():
     if request.method == 'GET':
         return render_template('new_sale.html', categories = Category.all())
     elif request.method == 'POST':
-        print("Getting in post")
         category = Category.find(request.form['category_id'])
-        print("2")
         values = (
             None,
             request.form['name'],
