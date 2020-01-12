@@ -20,3 +20,7 @@ class Comment:
             (sale.id,)
             ).fetchall()
             return [Comment(*row) for row in rows]
+
+    def delete(id):
+        with DB() as db:
+            db.execute('DELETE FROM comments WHERE id = ?', (id,))

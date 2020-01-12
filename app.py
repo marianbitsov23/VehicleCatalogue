@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def main_page():
-    return render_template('main_page.html')
+    return redirect('/sales')
 
 @app.route('/sales')
 def list_sales():
@@ -95,7 +95,7 @@ def delete_category(id):
     Category.find(id).delete()
     return redirect("/categories")
 
-@app.route('/comments/new', methods=['POST'])
+@app.route('/comments/new', methods=['GET', 'POST'])
 def new_comment():
     if request.method == 'POST':
         sale = Sale.find(request.form['sale_id'])
@@ -103,6 +103,12 @@ def new_comment():
         Comment(*values).create()
 
         return redirect(url_for('show_sale', id=sale.id))
+
+@app.route('/comments/<int:id>/delete', methods=['POST'])
+def del_comment(id):
+    Comment.delete(id)
+    sale = Sale.find(request.form['sale_id'])
+    return redirect(url_for('show_sale', id = sale.id))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

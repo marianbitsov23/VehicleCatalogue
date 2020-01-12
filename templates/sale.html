@@ -27,6 +27,10 @@
 <div id="comments">
 {% for comment in sale.comments() %}
     {{ comment.message }}
+    <form action="/comments/{{ comment.id }}/delete" method="post">
+        <input type="hidden" name="sale_id" value="{{ sale.id }}">
+        <button type="submit">Delete comment</button>
+    </form>
     <br/>
     <br/>
 {% endfor %}
