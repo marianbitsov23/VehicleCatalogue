@@ -53,12 +53,29 @@ def delete_sale(id):
 
     return redirect('/sales')
 
+@app.route('/sales/<int:id>/edit', methods=['GET', 'POST'])
+def edit_sale(id):
+    sale = Sale.find(id)
+    if request.method == 'GET':
+        return render_template('edit_sale.html', sale = sale, categories = Category.all())
+    elif request.method == 'POST':
+        sale.name = request.form['name']
+        sale.model = request.form['model']
+        sale.condition = request.form['condition']
+        sale.price = request.form['price']
+        sale.mileage = request.form['mileage']
+        sale.year = request.form['year']
+        sale.horsepower = request.form['horsepower']
+        sale.category = Category.find(request.form['category_id'])
+        sale.save()
+        return redirect(url_for('show_sale', id = sale.id))
+
 @app.route('/categories')
 def get_categories():
     return render_template("categories.html", categories=Category.all())
 
 
-@app.route('/categories/new', methods=["GET", "POST"])
+@app.route('/categories/new', methods=['GET', 'POST'])
 def new_category():
     if request.method == "GET":
         return render_template("new_category.html")
@@ -77,6 +94,15 @@ def get_category(id):
 def delete_category(id):
     Category.find(id).delete()
     return redirect("/categories")
+
+@app.route('/comments/new', methods=['POST'])
+def new_comment():
+    if request.method == 'POST':
+        sale = Sale.find(request.form['sale_id'])
+        values = (None, sale, request.form['message'])
+        Comment(*values).create()
+
+        return redirect(url_for('show_sale', id=sale.id))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

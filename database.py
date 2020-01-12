@@ -23,9 +23,9 @@ conn.cursor().execute('''
 CREATE TABLE IF NOT EXISTS comments
     (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        post_id INTEGER,
+        sale_id INTEGER,
         message TEXT,
-        FOREIGN KEY(post_id) REFERENCES posts(id)
+        FOREIGN KEY(sale_id) REFERENCES sales(id)
     )
 ''')
 conn.cursor().execute('''

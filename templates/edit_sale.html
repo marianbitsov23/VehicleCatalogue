@@ -1,0 +1,32 @@
+<form action="/sales/{{ sale.id }}/edit" method="post">
+    <label>Name</label>
+    <input name="name"/>
+    </br>
+    <label>Model</label>
+    <input name="model"/>
+    </br>
+    <label>Condition</label>
+    <input name="condition"/>
+    </br>
+    <label>Price</label>
+    <input name="price"/>
+    </br>
+    <label>Mileage</label>
+    <input name="mileage"/>
+    </br>
+    <label>Year</label>
+    <input name="year"/>
+    </br>
+    <label>Horsepower</label>
+    <input name="horsepower"/>
+    </br>
+    <label>Category</label>
+    <select name="category_id">
+      <option value="0">No category</option>
+      {% for category in categories %}
+        <option value="{{ category.id }}">{{ category.name }}</option>
+      {% endfor %}
+    </select>
+    </br>
+    <button type="submit">Submit</button>
+  </form>

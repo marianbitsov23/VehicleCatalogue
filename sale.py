@@ -57,7 +57,7 @@ class Sale:
             )
             db.execute('''UPDATE sales SET 
             name = ?, model = ?, horsepower = ?, price = ?, year = ?,
-            condition = ?, mileage = ?, category_id WHERE id = ?''', values)
+            condition = ?, mileage = ?, category_id = ? WHERE id = ?''', values)
             return self
 
     def delete(self):
@@ -65,4 +65,4 @@ class Sale:
             db.execute('DELETE FROM sales WHERE id = ?', (self.id,))
 
     def comments(self):
-        return Comment.find_by_post(self)
+        return Comment.find_by_sale(self)
