@@ -17,8 +17,9 @@ CREATE TABLE IF NOT EXISTS sales
         mileage DOUBLE,
         category_id INTEGER,
         file_path TEXT,
-        username TEXT,
+        user_id INTEGER,
         FOREIGN KEY(category_id) REFERENCES categories(id)
+        FOREIGN KEY(user_id) REFERENCES users(id)
     )
 ''')
 conn.cursor().execute('''
@@ -27,7 +28,7 @@ CREATE TABLE IF NOT EXISTS comments
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sale_id INTEGER,
         message TEXT,
-        user TEXT,
+        user_id INTEGER,
         FOREIGN KEY(sale_id) REFERENCES sales(id)
     )
 ''')

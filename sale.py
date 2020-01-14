@@ -2,7 +2,7 @@ from database import DB
 from comment import Comment
 
 class Sale:
-    def __init__(self, id, name, model, horsepower, price, year, condition, mileage, category, file_path, username):
+    def __init__(self, id, name, model, horsepower, price, year, condition, mileage, category, file_path, user_id):
         self.id = id
         self.name = name
         self.model = model
@@ -13,7 +13,7 @@ class Sale:
         self.mileage = mileage
         self.category = category
         self.file_path = file_path
-        self.username = username
+        self.user_id = user_id
 
     @staticmethod
     def all():
@@ -34,24 +34,24 @@ class Sale:
                 'SELECT * FROM sales WHERE category_id = ?',
                 (category.id,)
             ).fetchall()
-            return [Sale(*row) for row in rows]
+            return [Sale(*row) for row in rows]        
 
     @staticmethod
-    def search(keyword):
+    def find_by_user_id(user_id):
         with DB() as db:
             rows = db.execute(
-                'SELECT * FROM sales WHERE name = ?',
-                (keyword,)
+                'SELECT * FROM sales WHERE user_id = ?',
+                (user_id,)
             ).fetchall()
-            return [Sale(*row) for row in rows]        
+            return [Sale(*row) for row in rows]   
 
     def create(self):
         with DB() as db:
             values = (self.name, self.model, self.horsepower,
-            self.price, self.year, self.condition, self.mileage, self.category.id, self.file_path, self.username)
+            self.price, self.year, self.condition, self.mileage, self.category.id, self.file_path, self.user_id)
             db.execute('''INSERT INTO
                 sales (name, model, horsepower,
-                price, year, condition, mileage, category_id, file_path, username)
+                price, year, condition, mileage, category_id, file_path, user_id)
                 VALUES (?, ?, ?, ?, ?, ?, ? ,? ,?, ?)''', values)
             return self
 
@@ -67,12 +67,12 @@ class Sale:
                 self.mileage,
                 self.category.id,
                 self.file_path,
-                self.username,
+                self.user_id,
                 self.id
             )
             db.execute('''UPDATE sales SET 
             name = ?, model = ?, horsepower = ?, price = ?, year = ?,
-            condition = ?, mileage = ?, category_id = ?, file_path = ?, username =? WHERE id = ?''', values)
+            condition = ?, mileage = ?, category_id = ?, file_path = ?, user_id =? WHERE id = ?''', values)
             return self
 
     def delete(self):

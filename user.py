@@ -1,6 +1,7 @@
 import hashlib
 
 from database import DB
+from sale import Sale
 
 class User:
     def __init__(self, id, username, password, email):

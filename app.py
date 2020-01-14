@@ -31,6 +31,11 @@ def main_page():
     return redirect('/sales')
 
 #SALES METHODS
+@app.route('/sales/user_sales')
+@require_login
+def user_sales():
+    return render_template('library.html', sales = Sale.find_by_user_id(session['USERNAME']))
+
 @app.route('/sales_logged_in')
 @require_login
 def sales_logged_in():
@@ -213,12 +218,13 @@ def login():
             flash('Incorrect login information!')
             return render_template('login.html')
         session['logged_in'] = True
-        session['USERNAME'] = username
+        session['USERNAME'] = user.id
         return redirect('/')
 
 @app.route('/log_out', methods=['POST'])
 @require_login
 def log_out():
+    session['USERNAME'] = None
     session['logged_in'] = False
     return redirect('/')
 

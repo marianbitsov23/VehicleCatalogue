@@ -18,7 +18,7 @@
         <img src="{{ sale.file_path }}{{ img }}" width="400" height="200">
     </div>
 {% endfor %}
-{% if sale.username == username %}
+{% if sale.user_id == username %}
     <a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
     <form action="/sales/{{ sale.id }}/delete" method="post">
         <button type="submit">Delete sale</button>
@@ -33,7 +33,7 @@
 <div id="comments">
 {% for comment in sale.comments() %}
     {{ comment.message }}
-    {% if comment.user == username %}
+    {% if comment.user_id == username %}
         <form action="/comments/{{ comment.id }}/delete" method="post">
             <input type="hidden" name="sale_id" value="{{ sale.id }}">
             <button type="submit">Delete comment</button>
