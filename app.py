@@ -36,11 +36,13 @@ def main_page():
 def sales_logged_in():
     return render_template('sales_logged_in.html', sales = Sale.all())
 
-@app.route('/search', methods=['GET'])
+@app.route('/search', methods=['POST'])
 def search_sale():
-    if request.method == 'GET':
-        sales = Sale.search(request.form['keyword'])
-        return render_template('sales.html', sales = sales)
+    if request.method == 'POST':
+        keyword = request.form['keyword']
+        with DB() as db:
+            sales = db.execute('SELECT * FROM sales WHERE * LIKE '%keyword%' ').fetchall()
+            return redirect(url_for('list_sales', sales = sales))
 
 @app.route('/sales')
 def list_sales():
@@ -174,13 +176,21 @@ def register():
         return render_template('register.html')
     elif request.method == 'POST':
         username = request.form['username']
+        email = request.form['email']
         if User.find_by_username(username):
             flash('This username is already registered!')
+            return render_template('register.html')
+        elif not request.form['password'] == request.form['confirmpassword']:
+            flash('Incorrect password confirmation!')
+            return render_template('register.html')
+        elif User.find_by_email(email):
+            flash('This email is already registered!')
             return render_template('register.html')
         values = (
             None,
             username,
-            User.hash_password(request.form['password'])
+            User.hash_password(request.form['password']),
+            email
         )
         User(*values).create()
 
@@ -194,8 +204,12 @@ def login():
     elif request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        confirmpassword = request.form['confirmpassword']
         user = User.find_by_username(username)
         if not user or not user.verify_password(password):
+            flash('Incorrect login information!')
+            return render_template('login.html')
+        elif not user.verify_password(confirmpassword) == user.verify_password(password):
             flash('Incorrect login information!')
             return render_template('login.html')
         session['logged_in'] = True

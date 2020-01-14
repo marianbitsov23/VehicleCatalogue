@@ -1,0 +1,47 @@
+body {
+	background: #e5e5e5;
+	margin: 0;
+}
+
+.registration-header {
+	margin-bottom: 25px;
+	color: solid black;
+	font-size: 30px;
+	font-family: 'Bebas';
+	text-align: center;
+}
+
+.registration-form {
+	border: 1px solid lightgray;
+	width: 30%;
+	max-width: 500px;
+	margin: 10px auto 0 auto;
+	padding: 30px;
+	border-radius: 1px;
+	background-color: white;
+	box-shadow: 5px 5px 5px 1px rgba(0, 0, 0, .4), 0px 0px 40px rgba(0, 0, 0, .12) inset;
+}
+
+.username, .password, .confirm, .email{
+	width: 60%;
+	margin-bottom: 5px;
+	text-align: center;
+}
+
+.sign-button{
+	margin-top: 10px; 
+	text-align: center;
+}
+
+.form-elements{
+	text-align: center;
+}
+
+button{
+	-webkit-transition-duration: 0.4s;
+  	transition-duration: 0.4s;
+}
+button:hover{
+	background-color: lightgray;
+	color: white;
+}

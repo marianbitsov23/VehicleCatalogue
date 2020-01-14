@@ -1,18 +1,28 @@
-<h1>Register</h1>
-
-{% for message in get_flashed_messages() %}
-  <p>{{ message }}</p>
-{% endfor %}
-<form action="/register" method="post">
-  <label>Username</label>
-  <input name="username" type="text"/>
-  </br>
-  <label>Password</label>
-  <input name="password" type="password"/>
-  </br>
-  <p>Already have an account ?
-    <a href="/login">Log in from here!</a>
-  </p>
-  </br>
-  <button type="submit">Submit</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, intial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/login-registration.css') }}">
+    </head>
+    <body>
+    	<form class="registration-form" action="/register" method="post">
+	    	<header class="registration-header">Registration</header>
+            <div class="form-elements">
+                {% for message in get_flashed_messages() %}
+                  <p>{{ message }}</p>
+                {% endfor %}
+                <input class="username" type="text" name="username" placeholder="Enter your username"><br>
+        	    	<input class="password" type="password" name="password" placeholder="Enter your password"><br>
+                <input class="confirm" type="password" name="confirmpassword" placeholder="Confirm your password"><br>
+                <input class="email" type="text" name="email" placeholder="Enter your e-mail"><br>
+                <p>Already have an account ?
+                <a href="/login">Log in from here!</a>
+                </p>
+            </div>
+            <div class ="sign-button">
+	    	      <button type="Submit" value="Sign">Sign in</button>
+            </div>
+    	</form>
+    </body>
+</html>
