@@ -50,6 +50,7 @@ def list_sales():
 def show_sale(id):
     sale = Sale.find(id)
     images = os.listdir(sale.file_path)
+    sale.file_path = '/' + sale.file_path
     username = session['USERNAME']
     return render_template('sale.html', sale = sale, images = images, username = username)
 
@@ -109,6 +110,14 @@ def edit_sale(id):
         sale.year = request.form['year']
         sale.horsepower = request.form['horsepower']
         sale.category = Category.find(request.form['category_id'])
+        shutil.rmtree(sale.file_path)
+        direc = request.form['model']
+        os.mkdir("static/images/" + direc)
+        images = request.files.getlist("file")
+        for img in images:
+            img_path = 'static/images/' + direc + "/"
+            img.save(img_path + img.filename)
+        sale.file_path = img_path
         sale.save()
         return redirect(url_for('show_sale', id = sale.id))
 

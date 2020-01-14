@@ -5,15 +5,18 @@
 <h2>{{ sale. model }}</h2>
 
 <hr>
-<p>
-{{ sale.price }}
-{{ sale.mileage }}
-{{ sale.horsepower }}
-{{ sale.year }}
-{{ sale.condition }}
-</p>
+
+<p>Car price: {{ sale.price }}</p>
+<p>Kilometers driven: {{ sale.mileage }}</p>
+<p>Car horsepower: {{ sale.horsepower }}</p>
+<p>Year of production: {{ sale.year }}</p>
+<p>Condition of the car: {{ sale.condition }}</p>
+<p>Posted by : {{ sale.username }}</p>
+
 {% for img in images %}
-    <img src="{{ sale.file_path }}{{ img }}" alt="image">
+    <div>
+        <img src="{{ sale.file_path }}{{ img }}" width="400" height="200">
+    </div>
 {% endfor %}
 {% if sale.username == username %}
     <a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
