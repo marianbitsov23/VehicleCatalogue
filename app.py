@@ -1,19 +1,45 @@
 from functools import wraps
 
 from flask import Flask
-from flask import render_template, request, redirect, url_for, jsonify
+from flask import render_template, request, redirect, url_for, jsonify, send_from_directory, flash, session
+from werkzeug import secure_filename
 import json
+import os
 
 from user import User
 from comment import Comment
 from sale import Sale
 from category import Category
+from image import Image
 
 app = Flask(__name__)
+app.secret_key = "vehicle catalogue key"
+
+def require_login(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect('/login')
+        return func(*args, **kwargs)
+    return wrapper
 
 @app.route('/')
 def main_page():
+    if session.get('logged_in'):
+        return redirect('/sales_logged_in')
     return redirect('/sales')
+
+#SALES METHODS
+@app.route('/sales_logged_in')
+@require_login
+def sales_logged_in():
+    return render_template('sales_logged_in.html', sales = Sale.all())
+
+@app.route('/search', methods=['GET'])
+def search_sale():
+    if request.method == 'GET':
+        sales = Sale.search(request.form['keyword'])
+        return render_template('sales.html', sales = sales)
 
 @app.route('/sales')
 def list_sales():
@@ -22,14 +48,22 @@ def list_sales():
 @app.route('/sales/<int:id>')
 def show_sale(id):
     sale = Sale.find(id)
+    images = os.listdir(sale.file_path)
 
-    return render_template('sale.html', sale = sale)
+    return render_template('sale.html', sale = sale, images = images)
 
 @app.route('/sales/new', methods=['GET', 'POST'])
+@require_login
 def new_sale():
     if request.method == 'GET':
         return render_template('new_sale.html', categories = Category.all())
     elif request.method == 'POST':
+        direc = request.form['model']
+        os.mkdir("static/images/" + direc)
+        images = request.files.getlist("file")
+        for img in images:
+            img_path = 'static/images/' + direc + "/"
+            img.save(img_path + img.filename)
         category = Category.find(request.form['category_id'])
         values = (
             None,
@@ -40,7 +74,8 @@ def new_sale():
             request.form['year'],
             request.form['condition'],
             request.form['mileage'],
-            category
+            category,
+            img_path
         )
         Sale(*values).create()
 
@@ -70,6 +105,8 @@ def edit_sale(id):
         sale.save()
         return redirect(url_for('show_sale', id = sale.id))
 
+
+#CATEGORIES METHODS
 @app.route('/categories')
 def get_categories():
     return render_template("categories.html", categories=Category.all())
@@ -95,6 +132,7 @@ def delete_category(id):
     Category.find(id).delete()
     return redirect("/categories")
 
+#COMMENTS METHODS
 @app.route('/comments/new', methods=['GET', 'POST'])
 def new_comment():
     if request.method == 'POST':
@@ -108,16 +146,22 @@ def new_comment():
 def del_comment(id):
     Comment.delete(id)
     sale = Sale.find(request.form['sale_id'])
-    return redirect(url_for('show_sale', id = sale.id))
+    return redirect(url_for('show_sale',id = sale.id))
 
+
+#REGISTRATION/LOGIN METHODS
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('register.html')
     elif request.method == 'POST':
+        username = request.form['username']
+        if User.find_by_username(username):
+            flash('This username is already registered!')
+            return render_template('register.html')
         values = (
             None,
-            request.form['username'],
+            username,
             User.hash_password(request.form['password'])
         )
         User(*values).create()
@@ -130,12 +174,20 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
-        data = json.loads(request.data.decode('ascii'))
-        username = data['username']
-        password = data['password']
+        username = request.form['username']
+        password = request.form['password']
         user = User.find_by_username(username)
         if not user or not user.verify_password(password):
-            return redirect('login')
+            flash('Incorrect login information!')
+            return render_template('login.html')
+        session['logged_in'] = True
+        return redirect('/')
+
+@app.route('/log_out', methods=['POST'])
+@require_login
+def log_out():
+    session['logged_in'] = False
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run()

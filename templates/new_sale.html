@@ -1,4 +1,4 @@
-<form action="/sales/new" method="post">
+<form action="/sales/new" method="post" enctype="multipart/form-data">
     <label>Name</label>
     <input name="name"/>
     </br>
@@ -15,7 +15,7 @@
     <input name="mileage"/>
     </br>
     <label>Year</label>
-    <input name="year"/>
+    <input name="year" type="date"/>
     </br>
     <label>Horsepower</label>
     <input name="horsepower"/>
@@ -28,5 +28,7 @@
       {% endfor %}
     </select>
     </br>
-    <button type="submit">Submit</button>
+    <input type="file" multiple="" name="file" class="span3" /><br />
+    <input type="submit" value="Upload"  class="span2">
+    </br>
   </form>

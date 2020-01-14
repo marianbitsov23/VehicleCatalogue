@@ -12,10 +12,11 @@ CREATE TABLE IF NOT EXISTS sales
         model TEXT,
         horsepower INTEGER,
         price DOUBLE,
-        year TEXT,
+        year DATE,
         condition TEXT,
         mileage DOUBLE,
         category_id INTEGER,
+        file_path TEXT,
         FOREIGN KEY(category_id) REFERENCES categories(id)
     )
 ''')

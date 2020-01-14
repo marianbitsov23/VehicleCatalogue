@@ -12,13 +12,14 @@
 {{ sale.year }}
 {{ sale.condition }}
 </p>
-
+{% for img in images %}
+    <img src="{{ sale.file_path }}{{ img }}" alt="image">
+{% endfor %}
 <a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
 <form action="/sales/{{ sale.id }}/delete" method="post">
     <button type="submit">Delete sale</button>
 </form>
 <br/>
-
 <form action="/comments/new" method="post">
     <input type="text" name="message">
     <input type="hidden" name="sale_id" value="{{ sale.id }}">
