@@ -2,7 +2,7 @@ from database import DB
 from comment import Comment
 
 class Sale:
-    def __init__(self, id, name, model, horsepower, price, year, condition, mileage, category, file_path):
+    def __init__(self, id, name, model, horsepower, price, year, condition, mileage, category, file_path, username):
         self.id = id
         self.name = name
         self.model = model
@@ -13,6 +13,7 @@ class Sale:
         self.mileage = mileage
         self.category = category
         self.file_path = file_path
+        self.username = username
 
     @staticmethod
     def all():
@@ -47,11 +48,11 @@ class Sale:
     def create(self):
         with DB() as db:
             values = (self.name, self.model, self.horsepower,
-            self.price, self.year, self.condition, self.mileage, self.category.id, self.file_path)
+            self.price, self.year, self.condition, self.mileage, self.category.id, self.file_path, self.username)
             db.execute('''INSERT INTO
                 sales (name, model, horsepower,
-                price, year, condition, mileage, category_id, file_path)
-                VALUES (?, ?, ?, ?, ?, ?, ? ,? ,?)''', values)
+                price, year, condition, mileage, category_id, file_path, username)
+                VALUES (?, ?, ?, ?, ?, ?, ? ,? ,?, ?)''', values)
             return self
 
     def save(self):
@@ -66,11 +67,12 @@ class Sale:
                 self.mileage,
                 self.category.id,
                 self.file_path,
+                self.username,
                 self.id
             )
             db.execute('''UPDATE sales SET 
             name = ?, model = ?, horsepower = ?, price = ?, year = ?,
-            condition = ?, mileage = ?, category_id = ?, file_path = ? WHERE id = ?''', values)
+            condition = ?, mileage = ?, category_id = ?, file_path = ?, username =? WHERE id = ?''', values)
             return self
 
     def delete(self):

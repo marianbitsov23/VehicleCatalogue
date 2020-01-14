@@ -1,3 +1,5 @@
+<h1>Register</h1>
+
 {% for message in get_flashed_messages() %}
   <p>{{ message }}</p>
 {% endfor %}
@@ -8,6 +10,9 @@
   <label>Password</label>
   <input name="password" type="password"/>
   </br>
+  <p>Already have an account ?
+    <a href="/login">Log in from here!</a>
+  </p>
   </br>
   <button type="submit">Submit</button>
 </form>

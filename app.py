@@ -4,13 +4,14 @@ from flask import Flask
 from flask import render_template, request, redirect, url_for, jsonify, send_from_directory, flash, session
 from werkzeug import secure_filename
 import json
-import os
+import os, shutil
+
+from database import DB
 
 from user import User
 from comment import Comment
 from sale import Sale
 from category import Category
-from image import Image
 
 app = Flask(__name__)
 app.secret_key = "vehicle catalogue key"
@@ -49,8 +50,8 @@ def list_sales():
 def show_sale(id):
     sale = Sale.find(id)
     images = os.listdir(sale.file_path)
-
-    return render_template('sale.html', sale = sale, images = images)
+    username = session['USERNAME']
+    return render_template('sale.html', sale = sale, images = images, username = username)
 
 @app.route('/sales/new', methods=['GET', 'POST'])
 @require_login
@@ -75,20 +76,26 @@ def new_sale():
             request.form['condition'],
             request.form['mileage'],
             category,
-            img_path
+            img_path,
+            session['USERNAME']
         )
         Sale(*values).create()
 
-        return redirect('/sales')
+        return redirect('/')
 
 @app.route('/sales/<int:id>/delete', methods=['POST'])
+@require_login
 def delete_sale(id):
     sale = Sale.find(id)
+    shutil.rmtree(sale.file_path)
+    with DB() as db:
+        db.execute('DELETE FROM comments WHERE sale_id = ?', (sale.id,))
     sale.delete()
 
-    return redirect('/sales')
+    return redirect('/')
 
 @app.route('/sales/<int:id>/edit', methods=['GET', 'POST'])
+@require_login
 def edit_sale(id):
     sale = Sale.find(id)
     if request.method == 'GET':
@@ -134,10 +141,12 @@ def delete_category(id):
 
 #COMMENTS METHODS
 @app.route('/comments/new', methods=['GET', 'POST'])
+@require_login
 def new_comment():
     if request.method == 'POST':
         sale = Sale.find(request.form['sale_id'])
-        values = (None, sale, request.form['message'])
+        username = session['USERNAME']
+        values = (None, sale, request.form['message'], username)
         Comment(*values).create()
 
         return redirect(url_for('show_sale', id=sale.id))
@@ -181,6 +190,7 @@ def login():
             flash('Incorrect login information!')
             return render_template('login.html')
         session['logged_in'] = True
+        session['USERNAME'] = username
         return redirect('/')
 
 @app.route('/log_out', methods=['POST'])

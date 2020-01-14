@@ -1,15 +1,16 @@
 from database import DB
 
 class Comment:
-    def __init__(self, id, sale, message):
+    def __init__(self, id, sale, message, user):
         self.id = id
         self.sale = sale
         self.message = message
+        self.user = user
 
     def create(self):
         with DB() as db:
-            values = (self.sale.id, self.message)
-            db.execute('INSERT INTO comments (sale_id, message) VALUES (?, ?)', values)
+            values = (self.sale.id, self.message, self.user)
+            db.execute('INSERT INTO comments (sale_id, message, user) VALUES (?, ?, ?)', values)
             
             return self
 

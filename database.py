@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS sales
         mileage DOUBLE,
         category_id INTEGER,
         file_path TEXT,
+        username TEXT,
         FOREIGN KEY(category_id) REFERENCES categories(id)
     )
 ''')
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS comments
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sale_id INTEGER,
         message TEXT,
+        user TEXT,
         FOREIGN KEY(sale_id) REFERENCES sales(id)
     )
 ''')

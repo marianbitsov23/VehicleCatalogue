@@ -15,10 +15,12 @@
 {% for img in images %}
     <img src="{{ sale.file_path }}{{ img }}" alt="image">
 {% endfor %}
-<a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
-<form action="/sales/{{ sale.id }}/delete" method="post">
-    <button type="submit">Delete sale</button>
-</form>
+{% if sale.username == username %}
+    <a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
+    <form action="/sales/{{ sale.id }}/delete" method="post">
+        <button type="submit">Delete sale</button>
+    </form>
+{% endif %}
 <br/>
 <form action="/comments/new" method="post">
     <input type="text" name="message">
@@ -28,10 +30,12 @@
 <div id="comments">
 {% for comment in sale.comments() %}
     {{ comment.message }}
-    <form action="/comments/{{ comment.id }}/delete" method="post">
-        <input type="hidden" name="sale_id" value="{{ sale.id }}">
-        <button type="submit">Delete comment</button>
-    </form>
+    {% if comment.user == username %}
+        <form action="/comments/{{ comment.id }}/delete" method="post">
+            <input type="hidden" name="sale_id" value="{{ sale.id }}">
+            <button type="submit">Delete comment</button>
+        </form>
+    {% endif %}
     <br/>
     <br/>
 {% endfor %}
