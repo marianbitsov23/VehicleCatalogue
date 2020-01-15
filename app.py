@@ -161,8 +161,9 @@ def delete_category(id):
 def new_comment():
     if request.method == 'POST':
         sale = Sale.find(request.form['sale_id'])
-        username = session['USERNAME']
-        values = (None, sale, request.form['message'], username)
+        user_id = session['USERNAME']
+        username = User.find_by_id(user_id)
+        values = (None, sale, request.form['message'], user_id, username)
         Comment(*values).create()
 
         return redirect(url_for('show_sale', id=sale.id))
@@ -173,6 +174,11 @@ def del_comment(id):
     sale = Sale.find(request.form['sale_id'])
     return redirect(url_for('show_sale',id = sale.id))
 
+@app.route('/comments/<int:id>/edit', methods=['POST'])
+def edit_comment(id):
+    Comment.save(request.form['message'], id)
+    sale = Sale.find(request.form['sale_id'])
+    return redirect(url_for('show_sale',id = sale.id))    
 
 #REGISTRATION/LOGIN METHODS
 @app.route('/register', methods=['GET', 'POST'])

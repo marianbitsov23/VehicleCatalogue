@@ -44,6 +44,18 @@ class User:
                 return User(*row)
 
     @staticmethod
+    def find_by_id(id):
+        if not id:
+            return None
+        with DB() as db:
+            row = db.execute(
+                'SELECT username FROM users WHERE id = ?',
+                (id,)
+            ).fetchone()
+            if row:
+                return row[0]
+
+    @staticmethod
     def hash_password(password):
         return hashlib.md5(password.encode('utf-8')).hexdigest()
 

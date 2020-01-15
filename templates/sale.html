@@ -1,3 +1,13 @@
+<script>
+    function myFunction() {
+    var x = document.getElementById("myDIV");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+    } 
+</script>
 <title>Sale</title>
 <a href="/">Home</a>
 
@@ -32,11 +42,17 @@
 </form>
 <div id="comments">
 {% for comment in sale.comments() %}
-    {{ comment.message }}
+    <p> {{ comment.message }} Posted by: {{ comment.username }} </p>
     {% if comment.user_id == username %}
         <form action="/comments/{{ comment.id }}/delete" method="post">
             <input type="hidden" name="sale_id" value="{{ sale.id }}">
             <button type="submit">Delete comment</button>
+        </form>
+        <button onclick="myFunction()">Edit</button>
+        <form id="edit" action="/comments/{{ comment.id }}/edit" method="post">
+            <input type="text" name="message">
+            <input type="hidden" name="sale_id" value="{{ sale.id }}">
+            <button type="submit">submit</button>
         </form>
     {% endif %}
     <br/>

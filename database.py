@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS comments
         sale_id INTEGER,
         message TEXT,
         user_id INTEGER,
+        username TEXT,
         FOREIGN KEY(sale_id) REFERENCES sales(id)
     )
 ''')
