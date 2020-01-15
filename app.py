@@ -36,6 +36,7 @@ def user_info():
     username = User.find_by_id(session['USERNAME'])
     return render_template('user_info.html', user = User.find_by_username(username))
 
+
 #SALES METHODS
 @app.route('/sales/user_sales')
 @require_login
@@ -144,7 +145,6 @@ def edit_sale(id):
 def get_categories():
     return render_template("categories.html", categories=Category.all())
 
-
 @app.route('/categories/new', methods=['GET', 'POST'])
 def new_category():
     if request.method == "GET":
@@ -153,7 +153,6 @@ def new_category():
         category = Category(None, request.form["name"])
         category.create()
         return redirect("/categories")
-
 
 @app.route('/categories/<int:id>')
 def get_category(id):
@@ -164,6 +163,7 @@ def get_category(id):
 def delete_category(id):
     Category.find(id).delete()
     return redirect("/categories")
+
 
 #COMMENTS METHODS
 @app.route('/comments/new', methods=['GET', 'POST'])
@@ -196,6 +196,7 @@ def edit_comment(id):
         Comment.save(request.form['message'], id)
     sale = Sale.find(request.form['sale_id'])
     return redirect(url_for('show_sale',id = sale.id))    
+
 
 #REGISTRATION/LOGIN METHODS
 @app.route('/edit_user', methods=['POST'])
@@ -243,7 +244,6 @@ def register():
         User(*values).create()
 
         return redirect('/')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -64,5 +64,5 @@ class User:
 
     def save(self):
         with DB() as db:
-            values = (self.username, self.password, self.email)
-            db.execute('''UPDATE users SET username = ?, password = ?, email = ?''', values)
+            values = (self.username, self.password, self.email, self.id)
+            db.execute('''UPDATE users SET username = ?, password = ?, email = ? WHERE id = ?''', values)
