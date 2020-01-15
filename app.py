@@ -4,7 +4,7 @@ from flask import Flask
 from flask import render_template, request, redirect, url_for, jsonify, send_from_directory, flash, session
 from werkzeug import secure_filename
 import json
-import os, shutil
+import os, shutil, string, random
 
 from database import DB
 
@@ -67,11 +67,13 @@ def new_sale():
     if request.method == 'GET':
         return render_template('new_sale.html', categories = Category.all())
     elif request.method == 'POST':
+        letters = string.ascii_lowercase
+        direc_path = random.choice(letters)
         direc = request.form['model']
-        os.mkdir("static/images/" + direc)
+        os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
         images = request.files.getlist("file")
         for img in images:
-            img_path = 'static/images/' + direc + "/"
+            img_path = 'static/images/' + direc + User.find_by_id(session['USERNAME']) + direc_path + "/"
             img.save(img_path + img.filename)
         category = Category.find(request.form['category_id'])
         values = (
@@ -118,11 +120,13 @@ def edit_sale(id):
         sale.horsepower = request.form['horsepower']
         sale.category = Category.find(request.form['category_id'])
         shutil.rmtree(sale.file_path)
+        letters = string.ascii_lowercase
+        direc_path = random.choice(letters)
         direc = request.form['model']
-        os.mkdir("static/images/" + direc)
+        os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
         images = request.files.getlist("file")
         for img in images:
-            img_path = 'static/images/' + direc + "/"
+            img_path = 'static/images/' + direc + User.find_by_id(session['USERNAME']) + direc_path + "/"
             img.save(img_path + img.filename)
         sale.file_path = img_path
         sale.save()

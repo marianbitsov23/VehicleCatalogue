@@ -1,24 +1,24 @@
 <form action="/sales/{{ sale.id }}/edit" method="post" enctype="multipart/form-data">
     <label>Name</label>
-    <input name="name"/>
+    <input name="name" value="{{ sale.name }}"/>
     </br>
     <label>Model</label>
-    <input name="model"/>
+    <input name="model" value="{{ sale.model }}"/>
     </br>
     <label>Condition</label>
-    <input name="condition"/>
+    <input name="condition" value="{{ sale.condition }}"/>
     </br>
     <label>Price</label>
-    <input name="price"/>
+    <input name="price" value="{{ sale.price }}"/>
     </br>
     <label>Mileage</label>
-    <input name="mileage"/>
+    <input name="mileage" value="{{ sale.mileage }}"/>
     </br>
     <label>Year</label>
-    <input name="year" type="date"/>
+    <input name="year" type="date" value="{{ sale.year }}"/>
     </br>
     <label>Horsepower</label>
-    <input name="horsepower"/>
+    <input name="horsepower" value="{{ sale.horsepower }}"/>
     </br>
     <label>Category</label>
     <select name="category_id">

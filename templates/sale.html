@@ -1,13 +1,4 @@
-<script>
-    function myFunction() {
-    var x = document.getElementById("myDIV");
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
-    } 
-</script>
+<body onload="myFunction()"> 
 <title>Sale</title>
 <a href="/">Home</a>
 
@@ -48,14 +39,30 @@
             <input type="hidden" name="sale_id" value="{{ sale.id }}">
             <button type="submit">Delete comment</button>
         </form>
-        <button onclick="myFunction()">Edit</button>
-        <form id="edit" action="/comments/{{ comment.id }}/edit" method="post">
-            <input type="text" name="message">
-            <input type="hidden" name="sale_id" value="{{ sale.id }}">
-            <button type="submit">submit</button>
-        </form>
+        <button onclick="myFunction()">Edit comment</button>
+        
+        <script>
+            function myFunction() {
+            var x = document.getElementById("myDIV");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+            } 
+        </script>    
+        
+        <div id="myDIV">
+            <form action="/comments/{{ comment.id }}/edit" method="post">
+                <input type="text" name="message" value="{{ comment.message }}">
+                <input type="hidden" name="sale_id" value="{{ sale.id }}">
+                <button type="submit">submit</button>
+            </form>
+        </div>
+        
     {% endif %}
     <br/>
     <br/>
 {% endfor %}
 </div>
+</body>
