@@ -4,6 +4,7 @@
 
 <a href="/sales/new">Add a car for sale</a>
 <br/>
+<a href="/sales_logged_in">Home</a>
 <br/>
 {% for sale in sales %}
 <a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Model: {{ sale.model }}</a>
