@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>User Info</title>
+</head>
+<body onload="myFunction()">
+    <div>
+        <p>
+            User : {{ user.username }} <br/>
+            Email: {{ user.email }} <br/>
+        </p>
+    </div>
+        <a href="/">Home</a> <br/>
+        <a href="/sales/user_sales">My sales</a> <br/>
+        {% for message in get_flashed_messages() %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        <button onclick="myFunction()">Edit registration</button>
+        
+        <script>
+            function myFunction() {
+            var x = document.getElementById("myDIV");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+            } 
+        </script>    
+        
+        <div id="myDIV">
+            <form action="/edit_user" method="post">
+                <input type="text" name="username" value="{{ user.username }}">
+                <input type="email" name="email" value="{{ user.email }}">
+                <input type="password" name="password">
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+    <div>
+        <form action="/log_out" method="POST">
+            <input type="submit" value="log out">
+        </form>
+    </div>
+</body>
+</html>

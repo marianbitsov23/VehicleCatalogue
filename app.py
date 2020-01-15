@@ -30,6 +30,12 @@ def main_page():
         return redirect('/sales_logged_in')
     return redirect('/sales')
 
+@app.route('/user_info')
+@require_login
+def user_info():
+    username = User.find_by_id(session['USERNAME'])
+    return render_template('user_info.html', user = User.find_by_username(username))
+
 #SALES METHODS
 @app.route('/sales/user_sales')
 @require_login
@@ -39,7 +45,7 @@ def user_sales():
 @app.route('/sales_logged_in')
 @require_login
 def sales_logged_in():
-    return render_template('sales_logged_in.html', sales = Sale.all())
+    return render_template('sales_logged_in.html', sales = Sale.all(), username = User.find_by_id(session['USERNAME']))
 
 @app.route('/search', methods=['POST'])
 def search_sale():
@@ -167,8 +173,12 @@ def new_comment():
         sale = Sale.find(request.form['sale_id'])
         user_id = session['USERNAME']
         username = User.find_by_id(user_id)
-        values = (None, sale, request.form['message'], user_id, username)
-        Comment(*values).create()
+        if not request.form['message']:
+            flash('You entered empty comment!')
+            return redirect(url_for('show_sale', id=sale.id))
+        else:
+            values = (None, sale, request.form['message'], user_id, username)
+            Comment(*values).create()
 
         return redirect(url_for('show_sale', id=sale.id))
 
@@ -180,11 +190,34 @@ def del_comment(id):
 
 @app.route('/comments/<int:id>/edit', methods=['POST'])
 def edit_comment(id):
-    Comment.save(request.form['message'], id)
+    if not request.form['message']:
+        Comment.delete(id)
+    else:
+        Comment.save(request.form['message'], id)
     sale = Sale.find(request.form['sale_id'])
     return redirect(url_for('show_sale',id = sale.id))    
 
 #REGISTRATION/LOGIN METHODS
+@app.route('/edit_user', methods=['POST'])
+def edit_user():
+    if request.method == 'POST':
+        username = User.find_by_id(session['USERNAME'])
+        user = User.find_by_username(username)
+        user.username = request.form['username']
+        user.email = request.form['email']
+        if User.find_by_username(user.username):
+            flash('This username is already registered!')
+            return redirect('/user_info')
+        elif User.find_by_email(user.email):
+            flash('This email is already registered!')
+            return redirect('/user_info')
+        elif not request.form['password']:
+            flash('You forgot enter your new password!')
+            return redirect('/user_info')
+        user.password = User.hash_password(request.form['password'])
+        User.save(user)
+        return redirect('/user_info')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
