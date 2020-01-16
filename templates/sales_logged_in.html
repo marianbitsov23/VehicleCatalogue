@@ -7,7 +7,10 @@
 <br/>
 <a href="/sales/user_sales">My sales</a>
 <br/>
-<br/>
+<form action="/sales/search" method="POST">
+    <input type="search" name="keyword" placeholder="Search...">
+    <input type="submit" value="Search">
+</form><br/>
 <a href="/categories">Search by category</a>
 <form action="/log_out" method="POST">
     <input type="submit" value="log out">

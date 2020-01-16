@@ -22,10 +22,11 @@
     </br>
     <label>Category</label>
     <select name="category_id">
-      <option value="0">No category</option>
-      {% for category in categories %}
-        <option value="{{ category.id }}">{{ category.name }}</option>
-      {% endfor %}
+      <select name="category_id">
+        {% for category in categories %}
+          <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+      </select>
     </select>
     </br>
     <input type="file" multiple="" name="file" class="span3" /><br />

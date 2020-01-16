@@ -48,13 +48,15 @@ def user_sales():
 def sales_logged_in():
     return render_template('sales_logged_in.html', sales = Sale.all(), username = User.find_by_id(session['USERNAME']))
 
-@app.route('/search', methods=['POST'])
+@app.route('/sales/search', methods=['POST'])
 def search_sale():
     if request.method == 'POST':
         keyword = request.form['keyword']
         with DB() as db:
-            sales = db.execute('SELECT * FROM sales WHERE * LIKE '%keyword%' ').fetchall()
-            return redirect(url_for('list_sales', sales = sales))
+            rows = db.execute('''SELECT * FROM sales WHERE 
+            (name LIKE ? OR model LIKE ?) ''', ("%" + keyword + "%", "%" + keyword + "%",)).fetchall()
+            sales = [Sale(*row) for row in rows]  
+            return render_template('searched_sales.html', sales = sales)
 
 @app.route('/sales')
 def list_sales():
@@ -183,12 +185,14 @@ def new_comment():
         return redirect(url_for('show_sale', id=sale.id))
 
 @app.route('/comments/<int:id>/delete', methods=['POST'])
+@require_login
 def del_comment(id):
     Comment.delete(id)
     sale = Sale.find(request.form['sale_id'])
     return redirect(url_for('show_sale',id = sale.id))
 
 @app.route('/comments/<int:id>/edit', methods=['POST'])
+@require_login
 def edit_comment(id):
     if not request.form['message']:
         Comment.delete(id)
@@ -242,6 +246,10 @@ def register():
             email
         )
         User(*values).create()
+        user = User.find_by_username(username)
+        session['logged_in'] = True
+        session['USERNAME'] = user.id
+        return redirect('/')        
 
         return redirect('/')
 

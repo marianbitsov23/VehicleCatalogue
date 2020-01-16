@@ -1,0 +1,10 @@
+<title>Results</title>
+
+<h1>Results</h1>
+<br/>
+<a href="/">Home</a>
+<br/>
+{% for sale in sales %}
+<a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Model: {{ sale.model }}</a>
+<br/>
+{% endfor %}
