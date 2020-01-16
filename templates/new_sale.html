@@ -1,24 +1,28 @@
 <form action="/sales/new" method="post" enctype="multipart/form-data">
     <label>Name</label>
-    <input name="name"/>
+    <input name="name" type="text"/>
     </br>
     <label>Model</label>
-    <input name="model"/>
+    <input name="model" type="text"/>
     </br>
     <label>Condition</label>
-    <input name="condition"/>
+    <select name="condition">
+      <option value="new">New</option>
+      <option value="used">Used</option>
+      <option value="parts">Parts</option>
+    </select>
     </br>
     <label>Price</label>
-    <input name="price"/>
+    <input name="price" type="number" min="1" step="any"/>
     </br>
     <label>Mileage</label>
-    <input name="mileage"/>
+    <input name="mileage" type="number" min="1" step="any"/>
     </br>
     <label>Year</label>
     <input name="year" type="date"/>
     </br>
     <label>Horsepower</label>
-    <input name="horsepower"/>
+    <input name="horsepower" type="number" min="1" step="any"/>
     </br>
     <label>Category</label>
     <select name="category_id">
@@ -27,7 +31,10 @@
       {% endfor %}
     </select>
     </br>
+    {% for message in get_flashed_messages() %}
+      <p>{{ message }}</p>
+    {% endfor %}
     <input type="file" multiple="" name="file" class="span3" /><br />
-    <input type="submit" value="Upload"  class="span2">
+    <input type="submit" value="Post sale"  class="span2">
     </br>
   </form>

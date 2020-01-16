@@ -41,12 +41,24 @@ def user_info():
 @app.route('/sales/user_sales')
 @require_login
 def user_sales():
-    return render_template('library.html', sales = Sale.find_by_user_id(session['USERNAME']))
+    sales = Sale.find_by_user_id(session['USERNAME'])
+    images = {}
+    for sale in sales:
+        directory = os.listdir(sale.file_path) 
+        file_path = sale.file_path
+        images.update({file_path : directory[0]})
+    return render_template('library.html', sales = sales, images = images)
 
 @app.route('/sales_logged_in')
 @require_login
 def sales_logged_in():
-    return render_template('sales_logged_in.html', sales = Sale.all(), username = User.find_by_id(session['USERNAME']))
+    sales = Sale.all()
+    images = {}
+    for sale in sales:
+        directory = os.listdir(sale.file_path) 
+        file_path = sale.file_path
+        images.update({file_path : directory[0]})
+    return render_template('sales_logged_in.html', sales = sales, username = User.find_by_id(session['USERNAME']), images = images, file_path = file_path)
 
 @app.route('/sales/search', methods=['POST'])
 def search_sale():
@@ -55,12 +67,25 @@ def search_sale():
         with DB() as db:
             rows = db.execute('''SELECT * FROM sales WHERE 
             (name LIKE ? OR model LIKE ?) ''', ("%" + keyword + "%", "%" + keyword + "%",)).fetchall()
-            sales = [Sale(*row) for row in rows]  
-            return render_template('searched_sales.html', sales = sales)
+            sales = [Sale(*row) for row in rows]
+            images = {}
+            for sale in sales:
+                directory = os.listdir(sale.file_path) 
+                file_path = sale.file_path
+                images.update({file_path : directory[0]}) 
+            return render_template('searched_sales.html', sales = sales, images = images)
 
 @app.route('/sales')
 def list_sales():
-    return render_template('sales.html', sales = Sale.all())
+    if session.get('logged_in'):
+        return redirect('/sales_logged_in')
+    sales = Sale.all()
+    images = {}
+    for sale in sales:
+        directory = os.listdir(sale.file_path) 
+        file_path = sale.file_path
+        images.update({file_path : directory[0]})
+    return render_template('sales.html', sales = sales, images = images)
 
 @app.route('/sales/<int:id>')
 def show_sale(id):
@@ -79,8 +104,11 @@ def new_sale():
         letters = string.ascii_lowercase
         direc_path = random.choice(letters)
         direc = request.form['model']
-        os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
+        if request.files['file'].filename == '':
+            flash('You forgot to upload in image!')
+            return redirect('/sales/new')
         images = request.files.getlist("file")
+        os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
         for img in images:
             img_path = 'static/images/' + direc + User.find_by_id(session['USERNAME']) + direc_path + "/"
             img.save(img_path + img.filename)
@@ -128,12 +156,15 @@ def edit_sale(id):
         sale.year = request.form['year']
         sale.horsepower = request.form['horsepower']
         sale.category = Category.find(request.form['category_id'])
+        if request.files['file'].filename == '':
+            flash('You forgot to upload in image!')
+            return redirect(url_for('edit_sale', id = sale.id))
+        images = request.files.getlist("file")
         shutil.rmtree(sale.file_path)
         letters = string.ascii_lowercase
         direc_path = random.choice(letters)
         direc = request.form['model']
         os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
-        images = request.files.getlist("file")
         for img in images:
             img_path = 'static/images/' + direc + User.find_by_id(session['USERNAME']) + direc_path + "/"
             img.save(img_path + img.filename)
@@ -219,6 +250,9 @@ def edit_user():
         elif not request.form['password']:
             flash('You forgot enter your new password!')
             return redirect('/user_info')
+        elif not request.form['confirmpassword'] == request.form['password']:
+            flash('Wrong confiramtion for password!')
+            return redirect('/user_info')
         user.password = User.hash_password(request.form['password'])
         User.save(user)
         return redirect('/user_info')
@@ -250,8 +284,6 @@ def register():
         session['logged_in'] = True
         session['USERNAME'] = user.id
         return redirect('/')        
-
-        return redirect('/')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

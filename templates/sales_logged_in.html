@@ -10,7 +10,8 @@
 <form action="/sales/search" method="POST">
     <input type="search" name="keyword" placeholder="Search...">
     <input type="submit" value="Search">
-</form><br/>
+</form>
+<br/>
 <a href="/categories">Search by category</a>
 <form action="/log_out" method="POST">
     <input type="submit" value="log out">
@@ -18,9 +19,19 @@
 <br/>
 
 {% for sale in sales %}
-<a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Model: {{ sale.model }}</a>
-<br/>
+{% for key, value in images.items() %}
+    {% if key == sale.file_path %}
+    <div>
+        <a href="/sales/{{ sale.id }}">
+            <img src="{{ key }}{{ value }}" width="400" height="200">
+        </a>
+    </div>
+    {% endif %}
 {% endfor %}
+    <a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Model: {{ sale.model }}</a>
+{% endfor %}
+<br/>
+<br/>
 <br/>
 <p>Logged in as: <a href="/user_info">{{ username }}</a></p>
 <br/>
