@@ -5,6 +5,7 @@ from flask import render_template, request, redirect, url_for, jsonify, send_fro
 from werkzeug import secure_filename
 import json
 import os, shutil, string, random
+import logging
 
 from database import DB
 
@@ -41,24 +42,51 @@ def user_info():
 @app.route('/sales/user_sales')
 @require_login
 def user_sales():
-    return render_template('library.html', sales = Sale.find_by_user_id(session['USERNAME']))
+    sales = Sale.find_by_user_id(session['USERNAME'])
+    images = {}
+    for sale in sales:
+        directory = os.listdir(sale.file_path) 
+        file_path = sale.file_path
+        images.update({file_path : directory[0]})
+    return render_template('library.html', sales = sales, images = images)
 
 @app.route('/sales_logged_in')
 @require_login
 def sales_logged_in():
-    return render_template('sales_logged_in.html', sales = Sale.all(), username = User.find_by_id(session['USERNAME']))
+    sales = Sale.all()
+    images = {}
+    for sale in sales:
+        directory = os.listdir(sale.file_path) 
+        file_path = sale.file_path
+        images.update({file_path : directory[0]})
+    return render_template('sales_logged_in.html', sales = sales, username = User.find_by_id(session['USERNAME']), images = images, file_path = file_path)
 
-@app.route('/search', methods=['POST'])
+@app.route('/sales/search', methods=['POST'])
 def search_sale():
     if request.method == 'POST':
         keyword = request.form['keyword']
         with DB() as db:
-            sales = db.execute('SELECT * FROM sales WHERE * LIKE '%keyword%' ').fetchall()
-            return redirect(url_for('list_sales', sales = sales))
+            rows = db.execute('''SELECT * FROM sales WHERE 
+            (name LIKE ? OR model LIKE ?) ''', ("%" + keyword + "%", "%" + keyword + "%",)).fetchall()
+            sales = [Sale(*row) for row in rows]
+            images = {}
+            for sale in sales:
+                directory = os.listdir(sale.file_path) 
+                file_path = sale.file_path
+                images.update({file_path : directory[0]}) 
+            return render_template('searched_sales.html', sales = sales, images = images)
 
 @app.route('/sales')
 def list_sales():
-    return render_template('sales.html', sales = Sale.all())
+    if session.get('logged_in'):
+        return redirect('/sales_logged_in')
+    sales = Sale.all()
+    images = {}
+    for sale in sales:
+        directory = os.listdir(sale.file_path) 
+        file_path = sale.file_path
+        images.update({file_path : directory[0]})
+    return render_template('sales.html', sales = sales, images = images)
 
 @app.route('/sales/<int:id>')
 def show_sale(id):
@@ -77,8 +105,11 @@ def new_sale():
         letters = string.ascii_lowercase
         direc_path = random.choice(letters)
         direc = request.form['model']
-        os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
+        if request.files['file'].filename == '':
+            flash('You forgot to upload in image!')
+            return redirect('/sales/new')
         images = request.files.getlist("file")
+        os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
         for img in images:
             img_path = 'static/images/' + direc + User.find_by_id(session['USERNAME']) + direc_path + "/"
             img.save(img_path + img.filename)
@@ -98,6 +129,8 @@ def new_sale():
         )
         Sale(*values).create()
 
+        logging.info('user id: %s made a post', session['USERNAME'])#########
+
         return redirect('/')
 
 @app.route('/sales/<int:id>/delete', methods=['POST'])
@@ -108,6 +141,8 @@ def delete_sale(id):
     with DB() as db:
         db.execute('DELETE FROM comments WHERE sale_id = ?', (sale.id,))
     sale.delete()
+
+    logging.info('user id: %s deleted a post', session['USERNAME'])##########
 
     return redirect('/')
 
@@ -126,17 +161,23 @@ def edit_sale(id):
         sale.year = request.form['year']
         sale.horsepower = request.form['horsepower']
         sale.category = Category.find(request.form['category_id'])
+        if request.files['file'].filename == '':
+            flash('You forgot to upload in image!')
+            return redirect(url_for('edit_sale', id = sale.id))
+        images = request.files.getlist("file")
         shutil.rmtree(sale.file_path)
         letters = string.ascii_lowercase
         direc_path = random.choice(letters)
         direc = request.form['model']
         os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
-        images = request.files.getlist("file")
         for img in images:
             img_path = 'static/images/' + direc + User.find_by_id(session['USERNAME']) + direc_path + "/"
             img.save(img_path + img.filename)
         sale.file_path = img_path
         sale.save()
+
+        logging.info("user id: %s edited a post", session['USERNAME'])#########
+
         return redirect(url_for('show_sale', id = sale.id))
 
 
@@ -175,26 +216,39 @@ def new_comment():
         username = User.find_by_id(user_id)
         if not request.form['message']:
             flash('You entered empty comment!')
+
+            logging.warning('user id: %s tried to comment unsuccessfully', session['USERNAME'])###########
+
             return redirect(url_for('show_sale', id=sale.id))
         else:
             values = (None, sale, request.form['message'], user_id, username)
             Comment(*values).create()
 
+        logging.info('user id: %s commented successfully', session['USERNAME'])##########
+
         return redirect(url_for('show_sale', id=sale.id))
 
 @app.route('/comments/<int:id>/delete', methods=['POST'])
+@require_login
 def del_comment(id):
     Comment.delete(id)
     sale = Sale.find(request.form['sale_id'])
+
+    logging.info('user id: %s deleted a comment', session['USERNAME'])#############
+
     return redirect(url_for('show_sale',id = sale.id))
 
 @app.route('/comments/<int:id>/edit', methods=['POST'])
+@require_login
 def edit_comment(id):
     if not request.form['message']:
         Comment.delete(id)
     else:
         Comment.save(request.form['message'], id)
     sale = Sale.find(request.form['sale_id'])
+
+    logging.info('user id: %s edited a comment', session['USERNAME'])############
+
     return redirect(url_for('show_sale',id = sale.id))    
 
 
@@ -215,8 +269,17 @@ def edit_user():
         elif not request.form['password']:
             flash('You forgot enter your new password!')
             return redirect('/user_info')
+        elif not request.form['confirmpassword'] == request.form['password']:
+            flash('Wrong confiramtion for password!')
+
+            logging.warning('user id: %s did not confirm password', session['USERNAME'])############
+
+            return redirect('/user_info')
         user.password = User.hash_password(request.form['password'])
         User.save(user)
+
+        logging.info('user id: %s made changes to their account', session['USERNAME'])###########
+
         return redirect('/user_info')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -242,8 +305,10 @@ def register():
             email
         )
         User(*values).create()
-
-        return redirect('/')
+        user = User.find_by_username(username)
+        session['logged_in'] = True
+        session['USERNAME'] = user.id
+        return redirect('/')        
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -256,17 +321,28 @@ def login():
         user = User.find_by_username(username)
         if not user or not user.verify_password(password):
             flash('Incorrect login information!')
+            
+            logging.warning('user entered wrong password')##########
+
             return render_template('login.html')
         elif not user.verify_password(confirmpassword) == user.verify_password(password):
             flash('Incorrect login information!')
+            
+            logging.warning('user entered wrong credentials')############
+        
             return render_template('login.html')
         session['logged_in'] = True
+        app.logger.info('%s logged in ', user.username)
         session['USERNAME'] = user.id
+
+        logging.info('user id: %s has logged in', session['USERNAME'])###########
+
         return redirect('/')
 
 @app.route('/log_out', methods=['POST'])
 @require_login
 def log_out():
+    logging.info("user id: %s is logging out", session['USERNAME'])#############
     session['USERNAME'] = None
     session['logged_in'] = False
     return redirect('/')
