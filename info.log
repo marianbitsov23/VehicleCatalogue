@@ -1,0 +1,3 @@
+WARNING:root:user id: 6 tried to comment unsuccessfully
+INFO:werkzeug:127.0.0.1 - - [17/Jan/2020 15:50:23] "POST /comments/new HTTP/1.1" 302 -
+INFO:werkzeug:127.0.0.1 - - [17/Jan/2020 15:50:23] "GET /sales/2 HTTP/1.1" 200 -

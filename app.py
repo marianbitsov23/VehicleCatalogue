@@ -99,6 +99,7 @@ def show_sale(id):
 @app.route('/sales/new', methods=['GET', 'POST'])
 @require_login
 def new_sale():
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'GET':
         return render_template('new_sale.html', categories = Category.all())
     elif request.method == 'POST':
@@ -136,6 +137,7 @@ def new_sale():
 @app.route('/sales/<int:id>/delete', methods=['POST'])
 @require_login
 def delete_sale(id):
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     sale = Sale.find(id)
     shutil.rmtree(sale.file_path)
     with DB() as db:
@@ -149,6 +151,7 @@ def delete_sale(id):
 @app.route('/sales/<int:id>/edit', methods=['GET', 'POST'])
 @require_login
 def edit_sale(id):
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     sale = Sale.find(id)
     if request.method == 'GET':
         return render_template('edit_sale.html', sale = sale, categories = Category.all())
@@ -210,6 +213,7 @@ def delete_category(id):
 @app.route('/comments/new', methods=['GET', 'POST'])
 @require_login
 def new_comment():
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'POST':
         sale = Sale.find(request.form['sale_id'])
         user_id = session['USERNAME']
@@ -231,6 +235,7 @@ def new_comment():
 @app.route('/comments/<int:id>/delete', methods=['POST'])
 @require_login
 def del_comment(id):
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     Comment.delete(id)
     sale = Sale.find(request.form['sale_id'])
 
@@ -241,6 +246,7 @@ def del_comment(id):
 @app.route('/comments/<int:id>/edit', methods=['POST'])
 @require_login
 def edit_comment(id):
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if not request.form['message']:
         Comment.delete(id)
     else:
@@ -255,6 +261,7 @@ def edit_comment(id):
 #REGISTRATION/LOGIN METHODS
 @app.route('/edit_user', methods=['POST'])
 def edit_user():
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'POST':
         username = User.find_by_id(session['USERNAME'])
         user = User.find_by_username(username)
@@ -284,6 +291,7 @@ def edit_user():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'GET':
         return render_template('register.html')
     elif request.method == 'POST':
@@ -312,6 +320,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
@@ -342,6 +351,7 @@ def login():
 @app.route('/log_out', methods=['POST'])
 @require_login
 def log_out():
+    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     logging.info("user id: %s is logging out", session['USERNAME'])#############
     session['USERNAME'] = None
     session['logged_in'] = False
