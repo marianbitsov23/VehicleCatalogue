@@ -12,9 +12,9 @@
                 {% for message in get_flashed_messages() %}
                   <p>{{ message }}</p>
                 {% endfor %}
-                <input class="username" type="text" name="username" placeholder="Enter your username"><br>
-        	    	<input class="password" type="password" name="password" placeholder="Enter your password"><br>
-                <input class="confirm" type="password" name="confirmpassword" placeholder="Confirm your password"><br>
+                <input class="username" type="text" name="username" placeholder="Enter your username" required><br>
+        	    	<input class="password" type="password" name="password" placeholder="Enter your password" required><br>
+                <input class="confirm" type="password" name="confirmpassword" placeholder="Confirm your password" required><br>
                 <p>Don't have an account ?
                   <a href="/register">Register from here!</a>
                 </p>

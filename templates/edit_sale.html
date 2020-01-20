@@ -1,40 +1,51 @@
-<form action="/sales/{{ sale.id }}/edit" method="post" enctype="multipart/form-data">
-  <label>Name</label>
-  <input name="name" type="text" value="{{ sale.name }}"/>
-  </br>
-  <label>Model</label>
-  <input name="model" type="text" value="{{ sale.model }}"/>
-  </br>
-  <label>Condition</label>
-  <select name="condition">
-    <option value="new">New</option>
-    <option value="used">Used</option>
-    <option value="parts">Parts</option>
-  </select>
-  </br>
-  <label>Price</label>
-  <input name="price" type="number" min="1" step="any" value="{{ sale.price }}"/>
-  </br>
-  <label>Mileage</label>
-  <input name="mileage" type="number" min="1" step="any" value="{{ sale.mileage }}"/>
-  </br>
-  <label>Year</label>
-  <input name="year" type="date" value="{{ sale.year }}"/>
-  </br>
-  <label>Horsepower</label>
-  <input name="horsepower" type="number" min="1" step="any" value="{{ sale.horsepower }}"/>
-  </br>
-  <label>Category</label>
-  <select name="category_id">
-    {% for category in categories %}
-      <option value="{{ category.id }}">{{ category.name }}</option>
-    {% endfor %}
-  </select>
-  </br>
-  {% for message in get_flashed_messages() %}
-    <p>{{ message }}</p>
-  {% endfor %}  
-  <input type="file" multiple="" name="file" class="span3" /><br />
-  <input type="submit" value="Save"  class="span2">
-  </br>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Edit Sale</title>
+</head>
+<body>
+  <form action="/sales/{{ sale.id }}/edit" method="post" enctype="multipart/form-data">
+    <label>Name</label>
+    <input name="name" type="text" value="{{ sale.name }}" required/>
+    </br>
+    <label>Model</label>
+    <input name="model" type="text" value="{{ sale.model }}" required/>
+    </br>
+    <label>Condition</label>
+    <select name="condition">
+      <option value="new">New</option>
+      <option value="used">Used</option>
+      <option value="parts">Parts</option>
+    </select>
+    </br>
+    <label>Price</label>
+    <input name="price" type="number" min="1" max="9999999999" step="any" value="{{ sale.price }}" required/>
+    </br>
+    <label>Mileage</label>
+    <input name="mileage" type="number" min="1" max="9999999999" step="any" value="{{ sale.mileage }}" required/>
+    </br>
+    <label>Year</label>
+    <input name="year" type="date" value="{{ sale.year }}" required/>
+    </br>
+    <label>Horsepower</label>
+    <input name="horsepower" type="number" min="1" max="10000" step="any" value="{{ sale.horsepower }}" required/>
+    </br>
+    <label>Category</label>
+    <select name="category_id">
+      {% for category in categories %}
+        <option value="{{ category.id }}">{{ category.name }}</option>
+      {% endfor %}
+    </select>
+    </br>
+    {% for message in get_flashed_messages() %}
+      <p>{{ message }}</p>
+    {% endfor %}  
+    <input type="file" multiple="" name="file" class="span3" required/><br />
+    <input type="submit" value="Save"  class="span2">
+    </br>
+  </form>
+</body>
+</html>

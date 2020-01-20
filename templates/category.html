@@ -1,12 +1,21 @@
-<title>Categories - {{ category.name }}</title>
-
-<a href="/categories/{{ category.id }}/delete">Delete</a>
-<br/>
-<a href="/categories">Back</a>
-<br/>
-<h1>{{ category.name }}</h1>
-{% for sale in category.sales() %}
-<a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Author: {{ sale.model }}</a>
-<br/>
-{% endfor %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Categories - {{ category.name }}</title>
+</head>
+<body>
+    
+    <a href="/categories/{{ category.id }}/delete">Delete</a>
+    <br/>
+    <a href="/categories">Back</a>
+    <br/>
+    <h1>{{ category.name }}</h1>
+    {% for sale in category.sales() %}
+    <a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Author: {{ sale.model }}</a>
+    <br/>
+    {% endfor %}
+</body>
+</html>

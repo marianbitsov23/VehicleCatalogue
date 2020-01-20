@@ -54,11 +54,12 @@ def user_sales():
 def sales_logged_in():
     sales = Sale.all()
     images = {}
-    for sale in sales:
-        directory = os.listdir(sale.file_path) 
-        file_path = sale.file_path
-        images.update({file_path : directory[0]})
-    return render_template('sales_logged_in.html', sales = sales, username = User.find_by_id(session['USERNAME']), images = images, file_path = file_path)
+    if sales:
+        for sale in sales:
+            directory = os.listdir(sale.file_path) 
+            file_path = sale.file_path
+            images.update({file_path : directory[0]})
+    return render_template('sales_logged_in.html', sales = sales, username = User.find_by_id(session['USERNAME']), images = images)
 
 @app.route('/sales/search', methods=['POST'])
 def search_sale():
@@ -81,10 +82,11 @@ def list_sales():
         return redirect('/sales_logged_in')
     sales = Sale.all()
     images = {}
-    for sale in sales:
-        directory = os.listdir(sale.file_path) 
-        file_path = sale.file_path
-        images.update({file_path : directory[0]})
+    if sales:
+        for sale in sales:
+            directory = os.listdir(sale.file_path) 
+            file_path = sale.file_path
+            images.update({file_path : directory[0]})
     return render_template('sales.html', sales = sales, images = images)
 
 @app.route('/sales/<int:id>')
@@ -92,8 +94,9 @@ def show_sale(id):
     sale = Sale.find(id)
     images = os.listdir(sale.file_path)
     sale.file_path = '/' + sale.file_path
-    username = session['USERNAME']
-    return render_template('sale.html', sale = sale, images = images, username = username)
+    user_id = session['USERNAME']
+    username = User.find_by_id(sale.user_id)
+    return render_template('sale.html', sale = sale, images = images, user_id = user_id, username = username)
 
 @app.route('/sales/new', methods=['GET', 'POST'])
 @require_login
@@ -104,9 +107,6 @@ def new_sale():
         letters = string.ascii_lowercase
         direc_path = random.choice(letters)
         direc = request.form['model']
-        if request.files['file'].filename == '':
-            flash('You forgot to upload in image!')
-            return redirect('/sales/new')
         images = request.files.getlist("file")
         os.mkdir("static/images/" + direc + User.find_by_id(session['USERNAME']) + direc_path)
         for img in images:
@@ -156,9 +156,6 @@ def edit_sale(id):
         sale.year = request.form['year']
         sale.horsepower = request.form['horsepower']
         sale.category = Category.find(request.form['category_id'])
-        if request.files['file'].filename == '':
-            flash('You forgot to upload in image!')
-            return redirect(url_for('edit_sale', id = sale.id))
         images = request.files.getlist("file")
         shutil.rmtree(sale.file_path)
         letters = string.ascii_lowercase
@@ -234,27 +231,56 @@ def edit_comment(id):
 
 
 #REGISTRATION/LOGIN METHODS
-@app.route('/edit_user', methods=['POST'])
-def edit_user():
+@app.route('/edit_user_username', methods=['POST'])
+def edit_user_username():
     if request.method == 'POST':
         username = User.find_by_id(session['USERNAME'])
         user = User.find_by_username(username)
-        user.username = request.form['username']
-        user.email = request.form['email']
-        if User.find_by_username(user.username):
+        edit_username = request.form['username']
+        if User.find_by_username(edit_username):
             flash('This username is already registered!')
             return redirect('/user_info')
-        elif User.find_by_email(user.email):
+        edit_oldpassword = request.form['oldpassword']
+        if not user or not user.verify_password(edit_oldpassword):
+            flash('Incorrect password!')
+            return redirect('/user_info')
+        user.username = edit_username
+        User.save_username(user)
+        return redirect('/user_info')
+
+@app.route('/edit_user_email', methods=['POST'])
+def edit_user_email():
+    if request.method == 'POST':
+        username = User.find_by_id(session['USERNAME'])
+        user = User.find_by_username(username)
+        edit_email = request.form['email']
+        if User.find_by_email(edit_email):
             flash('This email is already registered!')
             return redirect('/user_info')
-        elif not request.form['password']:
-            flash('You forgot enter your new password!')
+        edit_oldpassword = request.form['oldpassword']
+        if not user or not user.verify_password(edit_oldpassword):
+            flash('Incorrect password!')
             return redirect('/user_info')
-        elif not request.form['confirmpassword'] == request.form['password']:
-            flash('Wrong confiramtion for password!')
+        user.email = edit_email
+        User.save_email(user)
+        return redirect('/user_info')
+
+@app.route('/edit_user_password', methods=['POST'])
+def edit_user_password():
+    if request.method == 'POST':
+        username = User.find_by_id(session['USERNAME'])
+        user = User.find_by_username(username)
+        edit_oldpassword = request.form['oldpassword']
+        if not user or not user.verify_password(edit_oldpassword):
+            flash('Incorrect password!')
+            return redirect('/user_info')
+        edit_password = request.form['password']
+        edit_confirmpassword = request.form['confirmpassword']
+        if not edit_password == edit_confirmpassword:
+            flash('Incorrect password confirmation!')
             return redirect('/user_info')
         user.password = User.hash_password(request.form['password'])
-        User.save(user)
+        User.save_password(user)
         return redirect('/user_info')
 
 @app.route('/register', methods=['GET', 'POST'])

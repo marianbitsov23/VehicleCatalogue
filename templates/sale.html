@@ -1,71 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sale</title>
+</head>
 <body onload="myFunction()"> 
-<title>Sale</title>
-<a href="/">Home</a>
+    <a href="/">Home</a>
 
-<h1>{{ sale.name }}</h1>
-<h2>{{ sale. model }}</h2>
+    <h1>{{ sale.name }}</h1>
+    <h2>{{ sale. model }}</h2>
 
-<hr>
+    <hr>
 
-<p>Car price: {{ sale.price }}</p>
-<p>Kilometers driven: {{ sale.mileage }}</p>
-<p>Car horsepower: {{ sale.horsepower }}</p>
-<p>Year of production: {{ sale.year }}</p>
-<p>Condition of the car: {{ sale.condition }}</p>
-<p>Posted by : {{ sale.username }}</p>
+    <p>Car price: {{ sale.price }}</p>
+    <p>Kilometers driven: {{ sale.mileage }}</p>
+    <p>Car horsepower: {{ sale.horsepower }}</p>
+    <p>Year of production: {{ sale.year }}</p>
+    <p>Condition of the car: {{ sale.condition }}</p>
+    <p>Posted by : {{ username }}</p>
 
-{% for img in images %}
-    <div>
-        <img src="{{ sale.file_path }}{{ img }}" width="400" height="200">
-    </div>
-{% endfor %}
-{% if sale.user_id == username %}
-    <a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
-    <form action="/sales/{{ sale.id }}/delete" method="post">
-        <button type="submit">Delete sale</button>
-    </form>
-{% endif %}
-<br/>
-{% for message in get_flashed_messages() %}
-  <p>{{ message }}</p>
-{% endfor %}
-<form action="/comments/new" method="post">
-    <input type="text" name="message">
-    <input type="hidden" name="sale_id" value="{{ sale.id }}">
-    <button type="submit">Create comment</button>
-</form>
-<div id="comments">
-{% for comment in sale.comments() %}
-    <p> {{ comment.message }} Posted by: {{ comment.username }} </p>
-    {% if comment.user_id == username %}
-        <form action="/comments/{{ comment.id }}/delete" method="post">
-            <input type="hidden" name="sale_id" value="{{ sale.id }}">
-            <button type="submit">Delete comment</button>
-        </form>
-        <button onclick="myFunction()">Edit comment</button>
-        
-        <script>
-            function myFunction() {
-            var x = document.getElementById("myDIV");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-            } 
-        </script>
-        
-        <div id="myDIV">
-            <form action="/comments/{{ comment.id }}/edit" method="post">
-                <input type="text" name="message" value="{{ comment.message }}">
-                <input type="hidden" name="sale_id" value="{{ sale.id }}">
-                <button type="submit">submit</button>
-            </form>
+    {% for img in images %}
+        <div>
+            <img src="{{ sale.file_path }}{{ img }}" width="400" height="200">
         </div>
-        
+    {% endfor %}
+    {% if sale.user_id == user_id %}
+        <a href="/sales/{{ sale.id }}/edit">Edit sale</a><br/><br/>
+        <form action="/sales/{{ sale.id }}/delete" method="post">
+            <button type="submit">Delete sale</button>
+        </form>
     {% endif %}
     <br/>
-    <br/>
-{% endfor %}
-</div>
+    {% for message in get_flashed_messages() %}
+    <p>{{ message }}</p>
+    {% endfor %}
+    <form action="/comments/new" method="post">
+        <input type="text" name="message">
+        <input type="hidden" name="sale_id" value="{{ sale.id }}">
+        <button type="submit">Create comment</button>
+    </form>
+    <div id="comments">
+    {% for comment in sale.comments() %}
+        <p> {{ comment.message }} Posted by: {{ comment.username }} </p>
+        {% if comment.user_id == user_id %}
+            <form action="/comments/{{ comment.id }}/delete" method="post">
+                <input type="hidden" name="sale_id" value="{{ sale.id }}">
+                <button type="submit">Delete comment</button>
+            </form>
+            <button onclick="myFunction()">Edit comment</button>
+            
+            <script>
+                function myFunction() {
+                var x = document.getElementById("myDIV");
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } else {
+                    x.style.display = "none";
+                }
+                } 
+            </script>
+            
+            <div id="myDIV">
+                <form action="/comments/{{ comment.id }}/edit" method="post">
+                    <input type="text" name="message" value="{{ comment.message }}">
+                    <input type="hidden" name="sale_id" value="{{ sale.id }}">
+                    <button type="submit">submit</button>
+                </form>
+            </div>
+            
+        {% endif %}
+        <br/>
+        <br/>
+    {% endfor %}
+    </div>
 </body>
+</html>

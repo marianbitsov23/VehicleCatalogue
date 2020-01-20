@@ -1,29 +1,38 @@
-<title>Sales</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sales</title>
+</head>
+<body>
+    <h1>Sales</h1>
+    <a href="/sales/new">Add a car for sale</a>
+    <br/>
+    <br/>
+    <a href="/categories">Search by category</a>
+    <br/>
+    <a href="/register">Register</a>
+    <br/>
+    <a href="/login">Login</a>
+    <br/>
+    <br/>
+    <a href="/sales/user_sales">My sales</a>
+    <br/>
+    <br/>
+    {% for sale in sales %}
+    {% for key, value in images.items() %}
+        {% if key == sale.file_path %}
+        <div>
+            <a href="/sales/{{ sale.id }}">
+                <img src="{{ key }}{{ value }}" width="400" height="200">
+            </a>
+        </div>
+        {% endif %}
+    {% endfor %}
+        <a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Model: {{ sale.model }}</a>
+    {% endfor %}
 
-<h1>Sales</h1>
-
-<a href="/sales/new">Add a car for sale</a>
-<br/>
-<br/>
-<a href="/categories">Search by category</a>
-<br/>
-<a href="/register">Register</a>
-<br/>
-<a href="/login">Login</a>
-<br/>
-<br/>
-<a href="/sales/user_sales">My sales</a>
-<br/>
-<br/>
-{% for sale in sales %}
-{% for key, value in images.items() %}
-    {% if key == sale.file_path %}
-    <div>
-        <a href="/sales/{{ sale.id }}">
-            <img src="{{ key }}{{ value }}" width="400" height="200">
-        </a>
-    </div>
-    {% endif %}
-{% endfor %}
-    <a href="/sales/{{ sale.id }}"><b>Name:</b> {{ sale.name }} | Model: {{ sale.model }}</a>
-{% endfor %}
+</body>
+</html>

@@ -1,40 +1,51 @@
-<form action="/sales/new" method="post" enctype="multipart/form-data">
-    <label>Name</label>
-    <input name="name" type="text"/>
-    </br>
-    <label>Model</label>
-    <input name="model" type="text"/>
-    </br>
-    <label>Condition</label>
-    <select name="condition">
-      <option value="new">New</option>
-      <option value="used">Used</option>
-      <option value="parts">Parts</option>
-    </select>
-    </br>
-    <label>Price</label>
-    <input name="price" type="number" min="1" step="any"/>
-    </br>
-    <label>Mileage</label>
-    <input name="mileage" type="number" min="1" step="any"/>
-    </br>
-    <label>Year</label>
-    <input name="year" type="date"/>
-    </br>
-    <label>Horsepower</label>
-    <input name="horsepower" type="number" min="1" step="any"/>
-    </br>
-    <label>Category</label>
-    <select name="category_id">
-      {% for category in categories %}
-        <option value="{{ category.id }}">{{ category.name }}</option>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>New Sale</title>
+</head>
+<body>
+  <form action="/sales/new" method="post" enctype="multipart/form-data">
+      <label>Name</label>
+      <input name="name" type="text" required/>
+      </br>
+      <label>Model</label>
+      <input name="model" type="text" required/>
+      </br>
+      <label>Condition</label>
+      <select name="condition" required>
+        <option value="new">New</option>
+        <option value="used">Used</option>
+        <option value="parts">Parts</option>
+      </select>
+      </br>
+      <label>Price</label>
+      <input name="price" type="number" min="1" max="999999999" step="any" required/>
+      </br>
+      <label>Mileage</label>
+      <input name="mileage" type="number" min="1" max="999999999" step="any" required/>
+      </br>
+      <label>Year</label>
+      <input name="year" type="date" required/>
+      </br>
+      <label>Horsepower</label>
+      <input name="horsepower" type="number" min="1" max="10000" step="any" required/>
+      </br>
+      <label>Category</label>
+      <select name="category_id" required>
+        {% for category in categories %}
+          <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+      </select>
+      </br>
+      {% for message in get_flashed_messages() %}
+        <p>{{ message }}</p>
       {% endfor %}
-    </select>
-    </br>
-    {% for message in get_flashed_messages() %}
-      <p>{{ message }}</p>
-    {% endfor %}
-    <input type="file" multiple="" name="file" class="span3" /><br />
-    <input type="submit" value="Post sale"  class="span2">
-    </br>
-  </form>
+      <input type="file" multiple="" name="file" class="span3" required/><br />
+      <input type="submit" value="Post sale"  class="span2">
+      </br>
+    </form>
+</body>
+</html>

@@ -43,7 +43,7 @@ class Sale:
                 'SELECT * FROM sales WHERE user_id = ?',
                 (user_id,)
             ).fetchall()
-            return [Sale(*row) for row in rows]   
+            return [Sale(*row) for row in rows]
 
     def create(self):
         with DB() as db:

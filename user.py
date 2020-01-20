@@ -62,7 +62,17 @@ class User:
     def verify_password(self, password):
         return self.password == hashlib.md5(password.encode('utf-8')).hexdigest()
 
-    def save(self):
+    def save_username(self):
         with DB() as db:
-            values = (self.username, self.password, self.email, self.id)
-            db.execute('''UPDATE users SET username = ?, password = ?, email = ? WHERE id = ?''', values)
+            values = (self.username, self.id)
+            db.execute('''UPDATE users SET username = ? WHERE id = ?''', values)
+    
+    def save_email(self):
+        with DB() as db:
+            values = (self.email, self.id)
+            db.execute('''UPDATE users SET email = ? WHERE id = ?''', values)
+
+    def save_password(self):
+        with DB() as db:
+            values = (self.password, self.id)
+            db.execute('''UPDATE users SET password = ? WHERE id = ?''', values)
