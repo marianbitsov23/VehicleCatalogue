@@ -1,3 +1,25 @@
-WARNING:root:user id: 6 tried to comment unsuccessfully
-INFO:werkzeug:127.0.0.1 - - [17/Jan/2020 15:50:23] "POST /comments/new HTTP/1.1" 302 -
-INFO:werkzeug:127.0.0.1 - - [17/Jan/2020 15:50:23] "GET /sales/2 HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+WARNING:root:user entered wrong password
+WARNING:root:user entered wrong password
+WARNING:root:user entered wrong password
+INFO:root:user id: 7 is logging out
+INFO:root:user id: 7 has logged in
+WARNING:root:user id: 7 tried to comment unsuccessfully
+INFO:root:user id: 7 commented successfully
+INFO:root:user id: 7 edited a comment
+INFO:root:user id: 7 deleted a comment
+INFO:root:user id: 7 made a post
+INFO:root:user id: 7 deleted a post
+INFO:root:user id: 7 is logging out
+INFO:root:user id:7is logging out01/20/20 19:50:45
+WARNING:root:user entered wrong password01/20/20 19:50:58
+INFO:root:user id:7has logged in01/20/20 19:52:38
+INFO:root:01/20/20 19:56:50 user id:7is logging out
+INFO:root:01/20/20 19:57:01 user id:7has logged in
+INFO:root:01/20/20 19:58:05 user id:7made a post
+INFO:root:01/20/20 19:59:07 user id:7commented successfully
+INFO:root:01/20/20 19:59:11 user id:7edited a comment
+INFO:root:01/20/20 19:59:13 user id:7edited a comment
+INFO:root:01/20/20 19:59:14 user id:7deleted a post
+INFO:root:01/20/20 19:59:34 user id:7is logging out

@@ -3,6 +3,8 @@ from functools import wraps
 from flask import Flask
 from flask import render_template, request, redirect, url_for, jsonify, send_from_directory, flash, session
 from werkzeug import secure_filename
+from datetime import datetime
+
 import json
 import os, shutil, string, random
 import logging
@@ -16,6 +18,22 @@ from category import Category
 
 app = Flask(__name__)
 app.secret_key = "vehicle catalogue key"
+
+logging.basicConfig(filename = 'info.log', level=logging.DEBUG)
+app.logger.disabled = True
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
+def i_logger(text):
+    time_now = datetime.now()
+    date = time_now.strftime("%D %T ")
+    logging.info(date + text)
+
+def w_logger(text):
+    time_now = datetime.now()
+    date = time_now.strftime("%D %T ")
+    logging.warning(date + text)
+
 
 def require_login(func):
     @wraps(func)
@@ -99,7 +117,6 @@ def show_sale(id):
 @app.route('/sales/new', methods=['GET', 'POST'])
 @require_login
 def new_sale():
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'GET':
         return render_template('new_sale.html', categories = Category.all())
     elif request.method == 'POST':
@@ -130,28 +147,28 @@ def new_sale():
         )
         Sale(*values).create()
 
-        logging.info('user id: %s made a post', session['USERNAME'])#########
+        text = "user id:" + str(session['USERNAME']) + "made a post"
+        i_logger(text)
 
         return redirect('/')
 
 @app.route('/sales/<int:id>/delete', methods=['POST'])
 @require_login
 def delete_sale(id):
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     sale = Sale.find(id)
     shutil.rmtree(sale.file_path)
     with DB() as db:
         db.execute('DELETE FROM comments WHERE sale_id = ?', (sale.id,))
     sale.delete()
 
-    logging.info('user id: %s deleted a post', session['USERNAME'])##########
+    text = "user id:" + str(session['USERNAME']) + "deleted a post"
+    i_logger(text)
 
     return redirect('/')
 
 @app.route('/sales/<int:id>/edit', methods=['GET', 'POST'])
 @require_login
 def edit_sale(id):
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     sale = Sale.find(id)
     if request.method == 'GET':
         return render_template('edit_sale.html', sale = sale, categories = Category.all())
@@ -179,7 +196,8 @@ def edit_sale(id):
         sale.file_path = img_path
         sale.save()
 
-        logging.info("user id: %s edited a post", session['USERNAME'])#########
+        text = "user id:" + str(session['USERNAME']) + "edited a post"
+        i_logger(text)
 
         return redirect(url_for('show_sale', id = sale.id))
 
@@ -213,7 +231,6 @@ def delete_category(id):
 @app.route('/comments/new', methods=['GET', 'POST'])
 @require_login
 def new_comment():
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'POST':
         sale = Sale.find(request.form['sale_id'])
         user_id = session['USERNAME']
@@ -221,39 +238,41 @@ def new_comment():
         if not request.form['message']:
             flash('You entered empty comment!')
 
-            logging.warning('user id: %s tried to comment unsuccessfully', session['USERNAME'])###########
+            text = "user id:" + str(session['USERNAME']) + "tried to comment unsuccessfully"
+            w_logger(text)
 
             return redirect(url_for('show_sale', id=sale.id))
         else:
             values = (None, sale, request.form['message'], user_id, username)
             Comment(*values).create()
 
-        logging.info('user id: %s commented successfully', session['USERNAME'])##########
+        text = "user id:" + str(session['USERNAME']) + "commented successfully"
+        i_logger(text)
 
         return redirect(url_for('show_sale', id=sale.id))
 
 @app.route('/comments/<int:id>/delete', methods=['POST'])
 @require_login
 def del_comment(id):
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     Comment.delete(id)
     sale = Sale.find(request.form['sale_id'])
 
-    logging.info('user id: %s deleted a comment', session['USERNAME'])#############
+    text = "user id:" + str(session['USERNAME']) + "edited a comment"
+    i_logger(text)
 
     return redirect(url_for('show_sale',id = sale.id))
 
 @app.route('/comments/<int:id>/edit', methods=['POST'])
 @require_login
 def edit_comment(id):
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if not request.form['message']:
         Comment.delete(id)
     else:
         Comment.save(request.form['message'], id)
     sale = Sale.find(request.form['sale_id'])
 
-    logging.info('user id: %s edited a comment', session['USERNAME'])############
+    text = "user id:" + str(session['USERNAME']) + "edited a comment"
+    i_logger(text)
 
     return redirect(url_for('show_sale',id = sale.id))    
 
@@ -261,7 +280,6 @@ def edit_comment(id):
 #REGISTRATION/LOGIN METHODS
 @app.route('/edit_user', methods=['POST'])
 def edit_user():
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'POST':
         username = User.find_by_id(session['USERNAME'])
         user = User.find_by_username(username)
@@ -279,19 +297,20 @@ def edit_user():
         elif not request.form['confirmpassword'] == request.form['password']:
             flash('Wrong confiramtion for password!')
 
-            logging.warning('user id: %s did not confirm password', session['USERNAME'])############
+            text1 = "user id:" + str(session['USERNAME']) + "did not confirm password"
+            w_logger(text1)
 
             return redirect('/user_info')
         user.password = User.hash_password(request.form['password'])
         User.save(user)
 
-        logging.info('user id: %s made changes to their account', session['USERNAME'])###########
+        text2 = "user id:" + str(session['USERNAME']) + "made changes to their account"
+        i_logger(text2)
 
         return redirect('/user_info')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'GET':
         return render_template('register.html')
     elif request.method == 'POST':
@@ -320,7 +339,6 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
@@ -331,31 +349,32 @@ def login():
         if not user or not user.verify_password(password):
             flash('Incorrect login information!')
             
-            logging.warning('user entered wrong password')##########
+            w_logger("user entered wrong password")
 
             return render_template('login.html')
         elif not user.verify_password(confirmpassword) == user.verify_password(password):
             flash('Incorrect login information!')
-            
-            logging.warning('user entered wrong credentials')############
+             
+            w_logger("user entered wrong credentials")
         
             return render_template('login.html')
         session['logged_in'] = True
         app.logger.info('%s logged in ', user.username)
         session['USERNAME'] = user.id
 
-        logging.info('user id: %s has logged in', session['USERNAME'])###########
+        text = "user id:" + str(session["USERNAME"]) + "has logged in"
+        i_logger(text)
 
         return redirect('/')
 
 @app.route('/log_out', methods=['POST'])
 @require_login
 def log_out():
-    logging.basicConfig(filename = 'info.log', level = logging.DEBUG)
-    logging.info("user id: %s is logging out", session['USERNAME'])#############
+    text = "user id:" + str(session['USERNAME']) + "is logging out"
+    i_logger(text)
     session['USERNAME'] = None
     session['logged_in'] = False
     return redirect('/')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
