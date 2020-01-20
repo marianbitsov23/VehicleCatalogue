@@ -1,0 +1,15 @@
+2020-01-20 18:40:33,389 - root - INFO - bici with id: 11 logged out
+2020-01-20 18:41:12,716 - root - INFO - bici with id: 11 successfully logged in
+2020-01-20 18:42:42,426 - root - INFO - bici with id: 11 logged out
+2020-01-20 18:42:47,397 - root - INFO - Someone tried to login with wrong login information
+2020-01-20 18:42:57,735 - root - INFO - bici with id: 11 successfully logged in
+2020-01-20 18:43:11,196 - root - INFO - bici with id: 11 added new sale
+2020-01-20 18:43:25,908 - root - INFO - bici with id: 11 edited sale 18
+2020-01-20 18:43:29,713 - root - INFO - bici with id: 11 commented 321321 on sale 18
+2020-01-20 18:43:34,876 - root - INFO - bici with id: 11 edited comment on sale 18 with: haha
+2020-01-20 18:43:36,232 - root - INFO - bici with id: 11 deleted comment on sale 18
+2020-01-20 18:43:37,452 - root - INFO - bici with id: 11 deleted sale 18
+2020-01-20 18:43:43,251 - root - INFO - bici with id: 11 changed his username to bici1
+2020-01-20 18:43:53,064 - root - INFO - bici1 with id: 11 changed his email to bici1@gmail.com
+2020-01-20 18:43:56,765 - root - INFO - bici1 with id: 11 changed his password
+2020-01-20 18:43:59,876 - root - INFO - bici1 with id: 11 changed his password

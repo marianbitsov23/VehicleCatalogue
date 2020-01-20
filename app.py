@@ -5,9 +5,9 @@ from flask import render_template, request, redirect, url_for, jsonify, send_fro
 from werkzeug import secure_filename
 import json
 import os, shutil, string, random
+import logging
 
 from database import DB
-
 from user import User
 from comment import Comment
 from sale import Sale
@@ -15,6 +15,10 @@ from category import Category
 
 app = Flask(__name__)
 app.secret_key = "vehicle catalogue key"
+app.logger.disabled = True
+log = logging.getLogger('werkzeug')
+log.disabled = True
+logging.basicConfig(filename= 'InfoVehicle.log', level= logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 def require_login(func):
     @wraps(func)
@@ -128,6 +132,8 @@ def new_sale():
         )
         Sale(*values).create()
 
+        logging.info('%s with id: %s added new sale', User.find_by_id(session['USERNAME']), session['USERNAME'])
+
         return redirect('/')
 
 @app.route('/sales/<int:id>/delete', methods=['POST'])
@@ -138,7 +144,7 @@ def delete_sale(id):
     with DB() as db:
         db.execute('DELETE FROM comments WHERE sale_id = ?', (sale.id,))
     sale.delete()
-
+    logging.info('%s with id: %s deleted sale %s', User.find_by_id(session['USERNAME']), session['USERNAME'], sale.id)
     return redirect('/')
 
 @app.route('/sales/<int:id>/edit', methods=['GET', 'POST'])
@@ -167,6 +173,9 @@ def edit_sale(id):
             img.save(img_path + img.filename)
         sale.file_path = img_path
         sale.save()
+
+        logging.info('%s with id: %s edited sale %s', User.find_by_id(session['USERNAME']), session['USERNAME'], sale.id)
+        
         return redirect(url_for('show_sale', id = sale.id))
 
 
@@ -182,7 +191,11 @@ def new_category():
     elif request.method == "POST":
         category = Category(None, request.form["name"])
         category.create()
+
+        logging.info('%s with id: %s added new categoty %s named %s', User.find_by_id(session['USERNAME']), session['USERNAME'], category.id, category.name)
+        
         return redirect("/categories")
+
 
 @app.route('/categories/<int:id>')
 def get_category(id):
@@ -192,6 +205,10 @@ def get_category(id):
 @app.route('/categories/<int:id>/delete')
 def delete_category(id):
     Category.find(id).delete()
+
+    logging.info('%s with id: %s deleted categoty %s named %s', User.find_by_id(session['USERNAME']), session['USERNAME'], category.id, category.name)
+
+
     return redirect("/categories")
 
 
@@ -210,6 +227,8 @@ def new_comment():
             values = (None, sale, request.form['message'], user_id, username)
             Comment(*values).create()
 
+        logging.info('%s with id: %s commented %s on sale %s', User.find_by_id(session['USERNAME']), session['USERNAME'], request.form['message'], sale.id)
+
         return redirect(url_for('show_sale', id=sale.id))
 
 @app.route('/comments/<int:id>/delete', methods=['POST'])
@@ -217,6 +236,10 @@ def new_comment():
 def del_comment(id):
     Comment.delete(id)
     sale = Sale.find(request.form['sale_id'])
+
+    logging.info('%s with id: %s deleted comment on sale %s', User.find_by_id(session['USERNAME']), session['USERNAME'], sale.id)
+
+
     return redirect(url_for('show_sale',id = sale.id))
 
 @app.route('/comments/<int:id>/edit', methods=['POST'])
@@ -227,6 +250,10 @@ def edit_comment(id):
     else:
         Comment.save(request.form['message'], id)
     sale = Sale.find(request.form['sale_id'])
+
+    logging.info('%s with id: %s edited comment on sale %s with: %s', User.find_by_id(session['USERNAME']), session['USERNAME'], sale.id, request.form['message'])
+
+
     return redirect(url_for('show_sale',id = sale.id))    
 
 
@@ -245,7 +272,11 @@ def edit_user_username():
             flash('Incorrect password!')
             return redirect('/user_info')
         user.username = edit_username
+        
+        logging.info('%s with id: %s changed his username to %s', User.find_by_id(session['USERNAME']), session['USERNAME'], edit_username)
+        
         User.save_username(user)
+
         return redirect('/user_info')
 
 @app.route('/edit_user_email', methods=['POST'])
@@ -263,6 +294,9 @@ def edit_user_email():
             return redirect('/user_info')
         user.email = edit_email
         User.save_email(user)
+        
+        logging.info('%s with id: %s changed his email to %s', User.find_by_id(session['USERNAME']), session['USERNAME'], edit_email)
+        
         return redirect('/user_info')
 
 @app.route('/edit_user_password', methods=['POST'])
@@ -281,6 +315,9 @@ def edit_user_password():
             return redirect('/user_info')
         user.password = User.hash_password(request.form['password'])
         User.save_password(user)
+        
+        logging.info('%s with id: %s changed his password', User.find_by_id(session['USERNAME']), session['USERNAME'])
+        
         return redirect('/user_info')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -292,12 +329,15 @@ def register():
         email = request.form['email']
         if User.find_by_username(username):
             flash('This username is already registered!')
+            logging.info('Someone tried to register with already existing username: %s', username)
             return render_template('register.html')
         elif not request.form['password'] == request.form['confirmpassword']:
             flash('Incorrect password confirmation!')
+            logging.info('Someone didnt confirm his password properly')
             return render_template('register.html')
         elif User.find_by_email(email):
             flash('This email is already registered!')
+            logging.info('Someone tied to register with already existing email: %s', email)
             return render_template('register.html')
         values = (
             None,
@@ -322,19 +362,27 @@ def login():
         user = User.find_by_username(username)
         if not user or not user.verify_password(password):
             flash('Incorrect login information!')
+            logging.info('Someone tried to login with wrong login information')
             return render_template('login.html')
         elif not user.verify_password(confirmpassword) == user.verify_password(password):
             flash('Incorrect login information!')
+            logging.info('Someone tried to login with wrong login information')
             return render_template('login.html')
         session['logged_in'] = True
         session['USERNAME'] = user.id
+
+        logging.info('%s with id: %s successfully logged in', User.find_by_id(session['USERNAME']), session['USERNAME'])
+
         return redirect('/')
 
 @app.route('/log_out', methods=['POST'])
 @require_login
 def log_out():
+    logging.info('%s with id: %s logged out', User.find_by_id(session['USERNAME']), session['USERNAME'])
+    
     session['USERNAME'] = None
     session['logged_in'] = False
+
     return redirect('/')
 
 if __name__ == '__main__':
