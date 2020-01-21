@@ -46,12 +46,13 @@ def user_info():
 @require_login
 def user_sales():
     sales = Sale.find_by_user_id(session['USERNAME'])
+    username = User.find_by_id(session['USERNAME'])
     images = {}
     for sale in sales:
         directory = os.listdir(sale.file_path) 
         file_path = sale.file_path
         images.update({file_path : directory[0]})
-    return render_template('library.html', sales = sales, images = images)
+    return render_template('library.html', sales = sales, images = images, username = username)
 
 @app.route('/sales_logged_in')
 @require_login
@@ -100,7 +101,9 @@ def show_sale(id):
     sale.file_path = '/' + sale.file_path
     user_id = session['USERNAME']
     username = User.find_by_id(sale.user_id)
-    return render_template('sale.html', sale = sale, images = images, user_id = user_id, username = username)
+    user = User.find_by_username(username)
+    email = user.email
+    return render_template('sale.html', sale = sale, images = images, user_id = user_id, username = username, email = email)
 
 @app.route('/sales/new', methods=['GET', 'POST'])
 @require_login

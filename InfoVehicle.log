@@ -13,3 +13,24 @@
 2020-01-20 18:43:53,064 - root - INFO - bici1 with id: 11 changed his email to bici1@gmail.com
 2020-01-20 18:43:56,765 - root - INFO - bici1 with id: 11 changed his password
 2020-01-20 18:43:59,876 - root - INFO - bici1 with id: 11 changed his password
+2020-01-21 08:46:18,086 - root - INFO - bici1 with id: 11 logged out
+2020-01-21 08:46:23,264 - root - INFO - Someone tried to login with wrong login information
+2020-01-21 08:46:30,571 - root - INFO - bici1 with id: 11 successfully logged in
+2020-01-21 08:56:13,175 - root - INFO - bici1 with id: 11 logged out
+2020-01-21 09:51:25,768 - root - INFO - bici1 with id: 11 successfully logged in
+2020-01-21 10:17:57,578 - root - INFO - bici1 with id: 11 logged out
+2020-01-21 10:39:09,440 - root - INFO - bici1 with id: 11 successfully logged in
+2020-01-21 10:42:18,560 - root - INFO - bici1 with id: 11 successfully logged in
+2020-01-21 10:50:28,911 - root - INFO - bici1 with id: 11 successfully logged in
+2020-01-21 15:16:23,609 - root - INFO - bici1 with id: 11 added new sale
+2020-01-21 15:16:41,032 - root - INFO - bici1 with id: 11 added new sale
+2020-01-21 16:18:39,823 - root - INFO - bici1 with id: 11 added new sale
+2020-01-21 16:19:13,780 - root - INFO - bici1 with id: 11 added new sale
+2020-01-21 16:22:00,348 - root - INFO - bici1 with id: 11 logged out
+2020-01-21 16:27:11,169 - root - INFO - bici1 with id: 11 successfully logged in
+2020-01-21 16:58:13,538 - root - INFO - bici1 with id: 11 logged out
+2020-01-21 16:59:19,908 - root - INFO - bici1 with id: 11 successfully logged in
+2020-01-21 17:04:09,863 - root - INFO - bici1 with id: 11 changed his username to bici
+2020-01-21 17:04:16,677 - root - INFO - bici with id: 11 changed his email to bici@gmail.com
+2020-01-21 17:04:21,898 - root - INFO - bici with id: 11 changed his password
+2020-01-21 17:04:26,210 - root - INFO - bici with id: 11 changed his password
