@@ -147,7 +147,7 @@ def new_sale():
         )
         Sale(*values).create()
 
-        text = "user id:" + str(session['USERNAME']) + "made a post"
+        text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME']) + "made a post"
         i_logger(text)
 
         return redirect('/')
@@ -161,7 +161,7 @@ def delete_sale(id):
         db.execute('DELETE FROM comments WHERE sale_id = ?', (sale.id,))
     sale.delete()
 
-    text = "user id:" + str(session['USERNAME']) + "deleted a post"
+    text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME']) + "deleted a post"
     i_logger(text)
 
     return redirect('/')
@@ -196,7 +196,7 @@ def edit_sale(id):
         sale.file_path = img_path
         sale.save()
 
-        text = "user id:" + str(session['USERNAME']) + "edited a post"
+        text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME']) + "edited a post"
         i_logger(text)
 
         return redirect(url_for('show_sale', id = sale.id))
@@ -238,7 +238,7 @@ def new_comment():
         if not request.form['message']:
             flash('You entered empty comment!')
 
-            text = "user id:" + str(session['USERNAME']) + "tried to comment unsuccessfully"
+            text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME']) + "tried to comment unsuccessfully"
             w_logger(text)
 
             return redirect(url_for('show_sale', id=sale.id))
@@ -246,7 +246,7 @@ def new_comment():
             values = (None, sale, request.form['message'], user_id, username)
             Comment(*values).create()
 
-        text = "user id:" + str(session['USERNAME']) + "commented successfully"
+        text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME']) + "commented successfully"
         i_logger(text)
 
         return redirect(url_for('show_sale', id=sale.id))
@@ -257,7 +257,7 @@ def del_comment(id):
     Comment.delete(id)
     sale = Sale.find(request.form['sale_id'])
 
-    text = "user id:" + str(session['USERNAME']) + "edited a comment"
+    text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME'])  + "edited a comment"
     i_logger(text)
 
     return redirect(url_for('show_sale',id = sale.id))
@@ -271,7 +271,7 @@ def edit_comment(id):
         Comment.save(request.form['message'], id)
     sale = Sale.find(request.form['sale_id'])
 
-    text = "user id:" + str(session['USERNAME']) + "edited a comment"
+    text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME'])  + "edited a comment"
     i_logger(text)
 
     return redirect(url_for('show_sale',id = sale.id))    
@@ -297,14 +297,14 @@ def edit_user():
         elif not request.form['confirmpassword'] == request.form['password']:
             flash('Wrong confiramtion for password!')
 
-            text1 = "user id:" + str(session['USERNAME']) + "did not confirm password"
+            text1 = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME']) + "did not confirm password"
             w_logger(text1)
 
             return redirect('/user_info')
         user.password = User.hash_password(request.form['password'])
         User.save(user)
 
-        text2 = "user id:" + str(session['USERNAME']) + "made changes to their account"
+        text2 = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME'])  + "made changes to their account"
         i_logger(text2)
 
         return redirect('/user_info')
@@ -362,7 +362,7 @@ def login():
         app.logger.info('%s logged in ', user.username)
         session['USERNAME'] = user.id
 
-        text = "user id:" + str(session["USERNAME"]) + "has logged in"
+        text = "user id: " + str(session["USERNAME"]) + "with username: " + User.find_by_id(session['USERNAME']) + "has logged in"
         i_logger(text)
 
         return redirect('/')
@@ -370,7 +370,7 @@ def login():
 @app.route('/log_out', methods=['POST'])
 @require_login
 def log_out():
-    text = "user id:" + str(session['USERNAME']) + "is logging out"
+    text = "user id: " + str(session['USERNAME']) + "with username: " + User.find_by_id(session['USERNAME']) + "is logging out"
     i_logger(text)
     session['USERNAME'] = None
     session['logged_in'] = False
